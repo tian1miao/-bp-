@@ -44,10 +44,16 @@ select, input[type="text"] {
 .status { font-weight: bold; margin-bottom: 10px; color: #e65100; }
 .hint { color: #999; font-size: 12px; margin-top: 5px; }
 #rec-content { max-height: 300px; overflow-y: auto; }
-#rec-content .hero-item {
-  border-bottom: 1px solid #eee;
-  padding: 8px 0;
-  font-size: 14px;
+#rec-content .hero-item { border-bottom: 1px solid #eee; padding: 8px 0; }
+.hero-item-main {
+  font-weight: bold;
+  font-size: 17px;
+  color: #000;
+}
+.hero-item-detail {
+  font-size: 12px;
+  color: #555;
+  margin-left: 10px;
 }
 #log-output {
   white-space: pre-wrap;
