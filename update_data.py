@@ -107,7 +107,7 @@ def get_hero_period(hero_id):
     return periods
 
 def get_fallback_winrate(hero_id, hero_name, target_position, hero_dict):
-    """使用 match/find 接口获取缺失位置的胜率，失败返回 None"""
+    """使用 match/find 接口获取缺失位置的胜率，失败或无效返回 None"""
     fallback_opponents = [
         ("狂铁", "0"),
         ("沈梦溪", "1"),
@@ -130,14 +130,20 @@ def get_fallback_winrate(hero_id, hero_name, target_position, hero_dict):
                 "camp2Heroes": json.dumps(camp2, separators=(',', ':')),
                 "days": 30
             }
-            resp = session.get(f"{BASE_URL}/match/find", params=params, timeout=6)  # 短超时
+            resp = session.get(f"{BASE_URL}/match/find", params=params, timeout=6)
             resp.raise_for_status()
             comps = resp.json().get("heroComparisons", [])
             target_comp = next((c for c in comps if c.get('heroName') == hero_name), None)
             if target_comp:
-                wr_value = float(target_comp.get("averageWinRate", 0.5))
+                raw_wr = target_comp.get("averageWinRate")
+                if raw_wr is None:
+                    continue
+                wr_value = float(raw_wr)
                 if wr_value > 1.0:
                     wr_value = wr_value / 100.0
+                # 如果胜率极小（< 0.001），视为无数据，不填充
+                if wr_value < 0.001:
+                    continue
                 wr_value = max(0.01, min(0.99, wr_value))
                 return wr_value
         except Exception:
