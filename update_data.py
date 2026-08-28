@@ -101,7 +101,7 @@ def get_hero_period(hero_id):
     periods = resp.json().get("winRateByDuration", [])
     return periods
 
-def get_fallback_winrate(hero_id, hero_name, target_position):
+def get_fallback_winrate(hero_id, hero_name, target_position, hero_dict):
     """
     当 combined 接口缺失某位置胜率时，尝试通过 match/find 获取对局平均胜率。
     使用固定的对手英雄列表（原桌面版逻辑）。
@@ -200,11 +200,10 @@ def main():
         for pos in POSITIONS:
             if pos not in wr_res:
                 # 尝试从 fallback 获取
-                fallback_wr = get_fallback_winrate(hero_id, hero_name, pos)
+                fallback_wr = get_fallback_winrate(hero_id, hero_name, pos, hero_dict)
                 if fallback_wr is not None:
                     wr_res[pos] = fallback_wr
                     print(f"  ✅ 已填充 {hero_name} 在 {pos} 的胜率: {fallback_wr:.4f}")
-                # 如果仍然没有，就不写入，网页端会使用默认0.5
 
         # 写入缓存字典
         pos_cache[hero_id_str] = pos_res
