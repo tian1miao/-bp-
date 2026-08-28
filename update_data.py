@@ -68,7 +68,7 @@ def get_global_winrate():
 def get_hero_combined(hero_id):
     """获取 combined 数据，不过滤出场率，返回 (pos_result, wr_result)"""
     url = f"{BASE_URL}/herostats/combined?heroId={hero_id}&date={TARGET_DATE}"
-    resp = session.get(url, timeout=8)  # 缩短超时
+    resp = session.get(url, timeout=8)
     resp.raise_for_status()
     data = resp.json().get("positions", {})
     pos_result = {}
@@ -77,11 +77,9 @@ def get_hero_combined(hero_id):
         role = POSITION_MAP.get(key)
         if not role:
             continue
-        # 保存出场率（不过滤）
         pick_raw = value.get("pickRate")
         if pick_raw is not None:
             pos_result[role] = round(float(pick_raw), 2)
-        # 保存胜率（转换到0-1区间）
         wr_raw = value.get("winRate")
         if wr_raw is not None:
             try:
@@ -89,7 +87,6 @@ def get_hero_combined(hero_id):
                 wr = max(0.01, min(0.99, wr / 100 if wr > 1 else wr))
                 wr_result[role] = wr
             except (TypeError, ValueError):
-                # 如果无法转换（例如字符串 "null"），跳过
                 pass
     return pos_result, wr_result
 
@@ -105,6 +102,17 @@ def get_hero_period(hero_id):
     resp.raise_for_status()
     periods = resp.json().get("winRateByDuration", [])
     return periods
+
+def get_hero_equip(hero_id, position_num):
+    """获取指定英雄在指定位置的出装数据，返回列表（过滤后）"""
+    url = f"{BASE_URL}/hero/equip?date={TARGET_DATE}&heroId={hero_id}&position={position_num}"
+    resp = session.get(url, timeout=8)
+    resp.raise_for_status()
+    equip_data = resp.json().get("equipmentWinRates", [])
+    # 只保留登场率 > 10% 的装备，并按登场率降序排列
+    filtered = [e for e in equip_data if e.get("pickRate", 0) > 10]
+    filtered.sort(key=lambda x: x.get("pickRate", 0), reverse=True)
+    return filtered
 
 def get_fallback_winrate(hero_id, hero_name, target_position, hero_dict):
     """使用 match/find 接口获取缺失位置的胜率，失败或无效返回 None"""
@@ -141,7 +149,6 @@ def get_fallback_winrate(hero_id, hero_name, target_position, hero_dict):
                 wr_value = float(raw_wr)
                 if wr_value > 1.0:
                     wr_value = wr_value / 100.0
-                # 如果胜率极小（< 0.001），视为无数据，不填充
                 if wr_value < 0.001:
                     continue
                 wr_value = max(0.01, min(0.99, wr_value))
@@ -152,11 +159,12 @@ def get_fallback_winrate(hero_id, hero_name, target_position, hero_dict):
 
 # ================= 单个英雄处理函数 =================
 def process_hero(hero_id, hero_name, hero_dict):
-    """处理单个英雄，返回 (hero_id_str, pos_result, wr_result, ana_result, period_result)"""
+    """处理单个英雄，返回 (hero_id_str, pos_result, wr_result, ana_result, period_result, equip_result)"""
     hero_id_str = str(hero_id)
     pos_res, wr_res = {}, {}
     ana_res = {"counters": [], "counteredBy": [], "goodSynergies": [], "badSynergies": []}
     period_res = []
+    equip_res = {}
 
     # 获取 combined 数据
     try:
@@ -184,7 +192,18 @@ def process_hero(hero_id, hero_name, hero_dict):
             wr_res[pos] = fallback_wr
             print(f"✅ 填充 {hero_name} 在 {pos} 的胜率: {fallback_wr:.4f}")
 
-    return hero_id_str, pos_res, wr_res, ana_res, period_res
+    # 获取装备推荐（只对出场率≥10%的位置获取，减少请求量）
+    for pos_name, pos_num in POSITION_TO_NUM.items():
+        # 如果 combined 中该位置出场率存在且≥10%，才请求装备
+        if pos_res.get(pos_name, 0) >= 10:
+            try:
+                equip_list = get_hero_equip(hero_id, pos_num)
+                if equip_list:
+                    equip_res[pos_name] = equip_list
+            except Exception as e:
+                print(f"⚠️ {hero_name} 获取 {pos_name} 装备失败: {e}")
+
+    return hero_id_str, pos_res, wr_res, ana_res, period_res, equip_res
 
 # ================= 主函数 =================
 def main():
@@ -208,6 +227,7 @@ def main():
     wr_cache = {}
     ana_cache = {}
     period_cache = {}
+    equip_cache = {}
 
     hero_items = list(hero_dict.items())  # [(name, id), ...]
     total = len(hero_items)
@@ -222,11 +242,12 @@ def main():
         for future in as_completed(future_to_hero):
             hero_name, hero_id = future_to_hero[future]
             try:
-                hero_id_str, pos_res, wr_res, ana_res, period_res = future.result()
+                hero_id_str, pos_res, wr_res, ana_res, period_res, equip_res = future.result()
                 pos_cache[hero_id_str] = pos_res
                 wr_cache[hero_id_str] = wr_res
                 ana_cache[hero_id_str] = ana_res
                 period_cache[hero_id_str] = period_res
+                equip_cache[hero_id_str] = equip_res
                 completed += 1
                 print(f"进度：{completed}/{total} - {hero_name} 完成")
             except Exception as e:
@@ -237,12 +258,14 @@ def main():
                 wr_cache[hero_id_str] = {}
                 ana_cache[hero_id_str] = {"counters": [], "counteredBy": [], "goodSynergies": [], "badSynergies": []}
                 period_cache[hero_id_str] = []
+                equip_cache[hero_id_str] = {}
 
     # 4. 保存所有缓存文件
     save_json(os.path.join(CACHE_DIR, "position_cache.json"), pos_cache)
     save_json(os.path.join(CACHE_DIR, "win_rate_cache.json"), wr_cache)
     save_json(os.path.join(CACHE_DIR, "hero_analysis_cache.json"), ana_cache)
     save_json(os.path.join(CACHE_DIR, "hero_period_cache.json"), period_cache)
+    save_json(os.path.join(CACHE_DIR, "equip_cache.json"), equip_cache)  # 新增装备缓存
 
     print("✅ 数据更新完成！")
 
