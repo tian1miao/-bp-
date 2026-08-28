@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>王者荣耀 BP 助手</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>王者荣耀 BP 助手</h1>
+
+    <!-- 设置区域 -->
+    <div class="card" id="setup-card">
+      <div class="form-row">
+        <label>阵营</label>
+        <select id="side-select">
+          <option value="blue">蓝方</option>
+          <option value="red">红方</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>你的位置</label>
+        <select id="pos-select">
+          <option value="">请选择</option>
+          <option>对抗路</option>
+          <option>中路</option>
+          <option>发育路</option>
+          <option>打野</option>
+          <option>辅助</option>
+        </select>
+      </div>
+      <button id="start-btn" class="btn primary">开始 BP</button>
+    </div>
+
+    <!-- 状态与阵容显示 -->
+    <div id="bp-area" style="display:none;">
+      <div class="card">
+        <div class="status" id="status-text"></div>
+        <div class="teams">
+          <div><span class="badge blue">我方</span><span id="my-team"></span></div>
+          <div><span class="badge red">敌方</span><span id="enemy-team"></span></div>
+        </div>
+      </div>
+
+      <!-- 输入区 -->
+      <div class="card">
+        <input type="text" id="hero-input" placeholder="输入英雄名，可带位置，多个用逗号分隔" />
+        <button id="submit-btn" class="btn">提交</button>
+        <div class="hint">例如：马可波罗(发育路), 张飞(辅助)</div>
+      </div>
+
+      <!-- 推荐区 -->
+      <div class="card" id="rec-card" style="display:none;">
+        <h3>推荐英雄</h3>
+        <div id="rec-content"></div>
+      </div>
+    </div>
+
+    <!-- 日志/分析区 -->
+    <div class="card" id="log-card">
+      <h3>日志 / 分析</h3>
+      <pre id="log-output"></pre>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
