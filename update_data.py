@@ -3,8 +3,10 @@ import json
 import os
 import time
 import datetime
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-# 配置
+# ================= 基础配置 =================
 BASE_URL = "https://tianyuanzhiyi.com/api"
 CACHE_DIR = "data"
 os.makedirs(CACHE_DIR, exist_ok=True)
@@ -20,13 +22,30 @@ now = datetime.datetime.now()
 days_ago = 2 if now.hour < 8 else 1
 TARGET_DATE = (now.date() - datetime.timedelta(days=days_ago)).strftime("%Y-%m-%d")
 
+# 配置带重试的 session
 session = requests.Session()
+retry_strategy = Retry(
+    total=3,
+    backoff_factor=1,
+    status_forcelist=[429, 500, 502, 503, 504],
+)
+adapter = HTTPAdapter(max_retries=retry_strategy)
+session.mount("http://", adapter)
+session.mount("https://", adapter)
 session.headers.update(HEADERS)
 
+# ================= 工具函数 =================
 def save_json(path, data):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+def load_json(path):
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+# ================= API 请求函数 =================
 def get_all_heroes():
     resp = session.get(f"{BASE_URL}/allheroes", timeout=15)
     resp.raise_for_status()
@@ -42,7 +61,8 @@ def get_global_winrate():
         blue = float(data.get("blueTeamWinRate", 50.45))
         red = float(data.get("redTeamWinRate", 100 - blue))
         return {TARGET_DATE: {"blue": blue, "red": red}}
-    except:
+    except Exception:
+        # 如果获取失败，使用默认 50/50
         return {TARGET_DATE: {"blue": 50.0, "red": 50.0}}
 
 def get_hero_combined(hero_id):
@@ -60,7 +80,7 @@ def get_hero_combined(hero_id):
         wr_raw = value.get("winRate")
         if pick_raw is not None:
             pick = float(pick_raw)
-            if pick >= 10:
+            if pick >= 10:  # 出场率过滤
                 pos_result[role] = round(pick, 2)
         if wr_raw is not None:
             wr = float(wr_raw)
@@ -81,25 +101,65 @@ def get_hero_period(hero_id):
     periods = resp.json().get("winRateByDuration", [])
     return periods
 
+def get_fallback_winrate(hero_id, hero_name, target_position):
+    """
+    当 combined 接口缺失某位置胜率时，尝试通过 match/find 获取对局平均胜率。
+    使用固定的对手英雄列表（原桌面版逻辑）。
+    """
+    fallback_opponents = [
+        ("狂铁", "0"),
+        ("沈梦溪", "1"),
+        ("敖隐", "2"),
+        ("裴擒虎", "3"),
+        ("少司缘", "4")
+    ]
+    pos_num = POSITION_TO_NUM.get(target_position)
+    if not pos_num:
+        return None
+
+    for opp_name, opp_pos_num in fallback_opponents:
+        if opp_name not in hero_dict or opp_name == hero_name:
+            continue
+        try:
+            camp1 = {pos_num: hero_id}
+            camp2 = {opp_pos_num: hero_dict[opp_name]}
+            params = {
+                "camp1Heroes": json.dumps(camp1, separators=(',', ':')),
+                "camp2Heroes": json.dumps(camp2, separators=(',', ':')),
+                "days": 30
+            }
+            resp = session.get(f"{BASE_URL}/match/find", params=params, timeout=15)
+            resp.raise_for_status()
+            comps = resp.json().get("heroComparisons", [])
+            target_comp = next((c for c in comps if c.get('heroName') == hero_name), None)
+            if target_comp:
+                wr_value = float(target_comp.get("averageWinRate", 0.5))
+                if wr_value > 1.0:
+                    wr_value = wr_value / 100.0
+                wr_value = max(0.01, min(0.99, wr_value))
+                return wr_value
+        except Exception:
+            continue
+    return None
+
+# ================= 主函数 =================
 def main():
     print("开始更新数据...")
-    # 获取英雄列表
+
+    # 1. 获取英雄列表
     hero_dict = get_all_heroes()
     save_json(os.path.join(CACHE_DIR, "hero_list.json"), hero_dict)
+    print(f"英雄数量：{len(hero_dict)}")
 
-    # 获取全局胜率
+    # 2. 获取全局胜率
     global_wr = get_global_winrate()
-    # 读取现有全局胜率缓存并合并（保留其他日期）
     global_path = os.path.join(CACHE_DIR, "global_win_rate_cache.json")
-    if os.path.exists(global_path):
-        with open(global_path, "r", encoding="utf-8") as f:
-            old_global = json.load(f)
-    else:
-        old_global = {}
+    old_global = load_json(global_path)
     old_global.update(global_wr)
     save_json(global_path, old_global)
+    print(f"全局胜率更新完成：{global_wr}")
 
-    # 遍历所有英雄获取详细数据
+    # 3. 遍历所有英雄获取详细数据
     pos_cache = {}
     wr_cache = {}
     ana_cache = {}
@@ -107,38 +167,61 @@ def main():
 
     hero_ids = list(hero_dict.values())
     total = len(hero_ids)
+
     for i, hero_id in enumerate(hero_ids):
         hero_id_str = str(hero_id)
-        hero_name = [k for k,v in hero_dict.items() if v == hero_id][0]
+        hero_name = next((name for name, hid in hero_dict.items() if hid == hero_id), str(hero_id))
         print(f"处理 {i+1}/{total}: {hero_name} (id={hero_id})")
+
+        # 初始化默认值
+        pos_res, wr_res = {}, {}
+        ana_res = {"counters": [], "counteredBy": [], "goodSynergies": [], "badSynergies": []}
+        period_res = []
+
+        # 获取 combined 数据
         try:
             pos_res, wr_res = get_hero_combined(hero_id)
-            pos_cache[hero_id_str] = pos_res
-            wr_cache[hero_id_str] = wr_res
         except Exception as e:
-            print(f"  获取 combined 失败: {e}")
-            pos_cache[hero_id_str] = {}
-            wr_cache[hero_id_str] = {}
+            print(f"  ⚠️ 获取 combined 失败: {e}")
+
+        # 获取 analysis 数据
         try:
             ana_res = get_hero_analysis(hero_id)
-            ana_cache[hero_id_str] = ana_res
         except Exception as e:
-            print(f"  获取 analysis 失败: {e}")
-            ana_cache[hero_id_str] = {"counters": [], "counteredBy": [], "goodSynergies": [], "badSynergies": []}
+            print(f"  ⚠️ 获取 analysis 失败: {e}")
+
+        # 获取 period 数据
         try:
             period_res = get_hero_period(hero_id)
-            period_cache[hero_id_str] = period_res
         except Exception as e:
-            print(f"  获取 period 失败: {e}")
-            period_cache[hero_id_str] = []
-        time.sleep(0.2)  # 避免请求过快
+            print(f"  ⚠️ 获取 period 失败: {e}")
 
+        # 填充缺失的胜率（关键优化）
+        for pos in POSITIONS:
+            if pos not in wr_res:
+                # 尝试从 fallback 获取
+                fallback_wr = get_fallback_winrate(hero_id, hero_name, pos)
+                if fallback_wr is not None:
+                    wr_res[pos] = fallback_wr
+                    print(f"  ✅ 已填充 {hero_name} 在 {pos} 的胜率: {fallback_wr:.4f}")
+                # 如果仍然没有，就不写入，网页端会使用默认0.5
+
+        # 写入缓存字典
+        pos_cache[hero_id_str] = pos_res
+        wr_cache[hero_id_str] = wr_res
+        ana_cache[hero_id_str] = ana_res
+        period_cache[hero_id_str] = period_res
+
+        # 短暂延时，避免请求过快
+        time.sleep(0.2)
+
+    # 保存所有缓存文件
     save_json(os.path.join(CACHE_DIR, "position_cache.json"), pos_cache)
     save_json(os.path.join(CACHE_DIR, "win_rate_cache.json"), wr_cache)
     save_json(os.path.join(CACHE_DIR, "hero_analysis_cache.json"), ana_cache)
     save_json(os.path.join(CACHE_DIR, "hero_period_cache.json"), period_cache)
 
-    print("数据更新完成！")
+    print("✅ 数据更新完成！")
 
 if __name__ == "__main__":
     main()
