@@ -6,19 +6,22 @@ let wrCache = {};           // heroId -> {position: winRate}
 let anaCache = {};          // heroId -> analysis object
 let periodCache = {};       // heroId -> period winrates
 let globalWinRate = {};     // date -> {blue, red}
+let sessionWrOverrides = {}; // 手动或实时填充的胜率，仅当前会话
 
 const POSITION_MAP = {"0":"对抗路","1":"中路","2":"发育路","3":"打野","4":"辅助"};
 const POSITIONS = Object.values(POSITION_MAP);
 const POSITION_TO_NUM = Object.fromEntries(Object.entries(POSITION_MAP).map(([k,v])=>[v,k]));
+const API_BASE = 'https://tianyuanzhiyi.com/api';
 
 let sideIsBlue = true;
 let userPosition = "";
-let myTeam = [];            // [{name, pos}]
+let myTeam = [];
 let enemyTeam = [];
 let myPositions = [];
 let pickedHeroes = new Set();
 let currentStep = 0;
 let draftSequence = [];
+let isCalculating = false;
 
 // ================= 工具函数 =================
 function log(msg) {
@@ -82,9 +85,7 @@ function parseHeroInput(text) {
 }
 
 function resolveHeroName(rawName) {
-  // 精确匹配
   if (heroDict[rawName]) return { name: rawName, msg: '' };
-  // 模糊匹配（简单包含或编辑距离，这里简化：找一个相似度最高的）
   let best = null, bestScore = 0;
   const keys = Object.keys(heroDict);
   for (const k of keys) {
@@ -97,7 +98,6 @@ function resolveHeroName(rawName) {
   return { name: null, msg: `找不到“${rawName}”` };
 }
 
-// 简单相似度（莱文斯坦距离）
 function similarity(s1, s2) {
   const len1 = s1.length, len2 = s2.length;
   if (len1 === 0) return len2 === 0 ? 1 : 0;
@@ -118,7 +118,6 @@ function similarity(s1, s2) {
 // ================= 数据加载 =================
 async function loadData() {
   try {
-    // 假设数据文件在 data/ 目录下
     const [heroesRes, posRes, wrRes, anaRes, periodRes, globalRes] = await Promise.all([
       fetch('data/hero_list.json'),
       fetch('data/position_cache.json'),
@@ -143,44 +142,95 @@ async function loadData() {
   }
 }
 
-// ================= 核心计算函数（与桌面版一致） =================
-function getGlobalWinrateLog(sideIsBlue) {
-  // 获取当天日期（与更新脚本保持一致，使用 UTC+8 的日期）
-  const now = new Date();
-  const offset = 8 * 60; // UTC+8
-  const localTime = new Date(now.getTime() + offset * 60000);
-  const dateStr = localTime.toISOString().slice(0,10);
-  const cache = globalWinRate[dateStr];
-  if (cache) {
-    const blueRatio = cache.blue / 100;
-    const redRatio = cache.red / 100;
-    return sideIsBlue ? Math.log(blueRatio / redRatio) : -Math.log(blueRatio / redRatio);
+// ================= 实时 fallback 获取缺失胜率 =================
+async function fetchFallbackWinrate(heroName, heroPos) {
+  const heroId = heroDict[heroName];
+  const posNum = POSITION_TO_NUM[heroPos];
+  if (!posNum) return null;
+
+  const fallbackOpponents = [
+    ["狂铁", "0"],
+    ["沈梦溪", "1"],
+    ["敖隐", "2"],
+    ["裴擒虎", "3"],
+    ["少司缘", "4"]
+  ];
+
+  for (const [oppName, oppPosNum] of fallbackOpponents) {
+    if (oppName === heroName || !heroDict[oppName]) continue;
+    const camp1 = { [posNum]: heroId };
+    const camp2 = { [oppPosNum]: heroDict[oppName] };
+    const params = new URLSearchParams({
+      camp1Heroes: JSON.stringify(camp1),
+      camp2Heroes: JSON.stringify(camp2),
+      days: 30
+    });
+    try {
+      const resp = await fetch(`${API_BASE}/match/find?${params.toString()}`);
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      const comps = data.heroComparisons || [];
+      const target = comps.find(c => c.heroName === heroName);
+      if (target && target.averageWinRate !== undefined) {
+        let wr = parseFloat(target.averageWinRate);
+        if (wr > 1) wr /= 100;
+        wr = Math.max(0.01, Math.min(0.99, wr));
+        return wr;
+      }
+    } catch (e) {
+      console.warn('fallback fetch error', e);
+      // 继续尝试下一个对手
+    }
   }
-  // 无数据时返回0
-  return 0;
+  return null;
 }
 
-function getHeroStats(heroId) {
+function getBaseWinrate(heroId, targetPosition, heroName) {
   const idStr = String(heroId);
-  return [posCache[idStr] || {}, wrCache[idStr] || {}];
-}
-
-function getBaseWinrate(heroId, targetPosition) {
-  const idStr = String(heroId);
+  // 先检查会话覆盖
+  if (sessionWrOverrides[idStr] && sessionWrOverrides[idStr][targetPosition] !== undefined) {
+    return sessionWrOverrides[idStr][targetPosition];
+  }
+  // 检查缓存
   const wrMap = wrCache[idStr] || {};
   if (wrMap[targetPosition] !== undefined) {
     let wr = wrMap[targetPosition];
     if (wr > 1) wr /= 100;
     return Math.max(0.01, Math.min(0.99, wr));
   }
-  // 回退：使用默认0.5
-  log(`⚠️ 缺少 ${idToName[heroId]} 在 ${targetPosition} 的胜率，使用50%`);
-  return 0.5;
+  // 缺失：返回 null 并触发异步填充
+  return null;
 }
 
-function getAnalysis(heroId) {
+async function ensureWinrate(heroId, heroName, targetPos) {
   const idStr = String(heroId);
-  return anaCache[idStr] || { counters: [], counteredBy: [], goodSynergies: [], badSynergies: [] };
+  // 再次检查（可能已填充）
+  const cached = getBaseWinrate(heroId, targetPos, heroName);
+  if (cached !== null) return cached;
+
+  log(`⚠️ 缺少 ${heroName} 在 ${targetPos} 的胜率，尝试实时获取...`);
+  const fallbackWr = await fetchFallbackWinrate(heroName, targetPos);
+  if (fallbackWr !== null) {
+    if (!sessionWrOverrides[idStr]) sessionWrOverrides[idStr] = {};
+    sessionWrOverrides[idStr][targetPos] = fallbackWr;
+    log(`✅ 已获取 ${heroName} 在 ${targetPos} 的胜率：${(fallbackWr*100).toFixed(2)}%`);
+    return fallbackWr;
+  } else {
+    // 手动输入
+    const input = prompt(`无法获取 ${heroName} 在 ${targetPos} 的胜率。\n请手动输入胜率（0-100 或 0-1）：`);
+    let wr = 0.5;
+    if (input !== null && input.trim() !== '') {
+      let val = parseFloat(input.trim().replace('%', ''));
+      if (!isNaN(val)) {
+        if (val > 1) val /= 100;
+        wr = Math.max(0.01, Math.min(0.99, val));
+      }
+    }
+    if (!sessionWrOverrides[idStr]) sessionWrOverrides[idStr] = {};
+    sessionWrOverrides[idStr][targetPos] = wr;
+    log(`📝 已手动设置 ${heroName} 在 ${targetPos} 的胜率为 ${(wr*100).toFixed(2)}%`);
+    return wr;
+  }
 }
 
 function getPeriodWinrate(heroId, periodKey) {
@@ -199,6 +249,11 @@ function getPeriodWinrate(heroId, periodKey) {
     }
   }
   return 0.5;
+}
+
+function getAnalysis(heroId) {
+  const idStr = String(heroId);
+  return anaCache[idStr] || { counters: [], counteredBy: [], goodSynergies: [], badSynergies: [] };
 }
 
 function computeHeroFeatures(heroName, heroPos, heroWr, team, enemyTeam) {
@@ -251,7 +306,7 @@ function computeHeroFeatures(heroName, heroPos, heroWr, team, enemyTeam) {
   return [finalCounterScore, discountedCombo];
 }
 
-function predictLineupWinrate(myTeam, enemyTeam, sideIsBlue, periodKey = null) {
+async function predictLineupWinrate(myTeam, enemyTeam, sideIsBlue, periodKey = null) {
   const W_base = 1.0267, W_hero = 1.1811, W_counter = 1.2668, W_combo = 1.3774;
   const S_base = getGlobalWinrateLog(sideIsBlue);
 
@@ -260,8 +315,14 @@ function predictLineupWinrate(myTeam, enemyTeam, sideIsBlue, periodKey = null) {
 
   for (const [myName, myPos] of myTeam) {
     let wr;
-    if (periodKey) wr = getPeriodWinrate(heroDict[myName], periodKey);
-    else wr = getBaseWinrate(heroDict[myName], myPos);
+    if (periodKey) {
+      wr = getPeriodWinrate(heroDict[myName], periodKey);
+    } else {
+      wr = getBaseWinrate(heroDict[myName], myPos, myName);
+      if (wr === null) {
+        wr = await ensureWinrate(heroDict[myName], myName, myPos);
+      }
+    }
     myLogits.push(Math.log(wr / (1 - wr)));
     const [cScore, sScore] = computeHeroFeatures(myName, myPos, wr, myTeam, enemyTeam);
     totalCounterIndex += cScore;
@@ -269,8 +330,14 @@ function predictLineupWinrate(myTeam, enemyTeam, sideIsBlue, periodKey = null) {
   }
   for (const [eName, ePos] of enemyTeam) {
     let wr;
-    if (periodKey) wr = getPeriodWinrate(heroDict[eName], periodKey);
-    else wr = getBaseWinrate(heroDict[eName], ePos);
+    if (periodKey) {
+      wr = getPeriodWinrate(heroDict[eName], periodKey);
+    } else {
+      wr = getBaseWinrate(heroDict[eName], ePos, eName);
+      if (wr === null) {
+        wr = await ensureWinrate(heroDict[eName], eName, ePos);
+      }
+    }
     enemyLogits.push(Math.log(wr / (1 - wr)));
     const [cScore, sScore] = computeHeroFeatures(eName, ePos, wr, enemyTeam, myTeam);
     totalCounterIndex -= cScore;
@@ -287,15 +354,32 @@ function predictLineupWinrate(myTeam, enemyTeam, sideIsBlue, periodKey = null) {
   return (1 / (1 + Math.exp(-S_total))) * 100;
 }
 
-function evaluateHeroContribution(heroName, heroPos, myTeam, enemyTeam) {
+function getGlobalWinrateLog(sideIsBlue) {
+  const now = new Date();
+  const offset = 8 * 60;
+  const localTime = new Date(now.getTime() + offset * 60000);
+  const dateStr = localTime.toISOString().slice(0,10);
+  const cache = globalWinRate[dateStr];
+  if (cache) {
+    const blueRatio = cache.blue / 100;
+    const redRatio = cache.red / 100;
+    return sideIsBlue ? Math.log(blueRatio / redRatio) : -Math.log(blueRatio / redRatio);
+  }
+  return 0;
+}
+
+async function evaluateHeroContribution(heroName, heroPos, myTeam, enemyTeam) {
   const heroId = heroDict[heroName];
-  const wr = getBaseWinrate(heroId, heroPos);
+  let wr = getBaseWinrate(heroId, heroPos, heroName);
+  if (wr === null) wr = await ensureWinrate(heroId, heroName, heroPos);
   const heroLogit = Math.log(wr / (1 - wr));
 
-  const teamLogits = myTeam.map(([n,p]) => {
-    const w = getBaseWinrate(heroDict[n], p);
-    return Math.log(w / (1 - w));
-  });
+  const teamLogits = [];
+  for (const [n,p] of myTeam) {
+    let w = getBaseWinrate(heroDict[n], p, n);
+    if (w === null) w = await ensureWinrate(heroDict[n], n, p);
+    teamLogits.push(Math.log(w / (1 - w)));
+  }
   const teamAvg = teamLogits.reduce((a,b)=>a+b,0) / teamLogits.length;
   const baseContrib = heroLogit - teamAvg;
 
@@ -335,7 +419,51 @@ function evaluateSingleHeroDetails(heroName, heroPos, myTeam, enemyTeam) {
   return details;
 }
 
-// ================= BP 流程控制 =================
+// ================= 推荐展示（字体调整） =================
+function displayRecommendations(finalResults, availablePositions) {
+  const recContent = document.getElementById('rec-content');
+  let html = '';
+  for (const pos of availablePositions) {
+    const sorted = finalResults[pos].sort((a,b)=>b.score-a.score);
+    if (!sorted.length) continue;
+    let displayList = sorted.slice(0, 3);
+    const mainCount = displayList.filter(item => isMainPosition(item.name, pos)).length;
+    if (mainCount < 3) {
+      for (const item of sorted.slice(3)) {
+        if (mainCount >= 3) break;
+        if (isMainPosition(item.name, pos)) {
+          displayList.push(item);
+          break;
+        }
+      }
+    }
+    html += `<div class="hero-group"><strong>${pos}</strong></div>`;
+    for (const { score, name } of displayList) {
+      const heroId = heroDict[name];
+      const posData = posCache[heroId] || {};
+      const posStr = Object.entries(posData).map(([p, rate]) => `${p} ${rate}%`).join(' / ');
+      const verdict = getVerdict(score);
+      // 主行加粗加大
+      html += `<div class="hero-item"><span class="hero-item-main">${name} (${posStr}) [胜率:${score.toFixed(2)}%] [${verdict}]</span></div>`;
+      // 细节行小字体灰黑
+      const details = evaluateSingleHeroDetails(name, pos, myTeam, enemyTeam);
+      for (const d of details) {
+        if (d.type === 'counter') {
+          const mark = d.value > 0 ? '克制' : (d.value < 0 ? '被克制' : '无克制');
+          const tag = d.isMatchup ? ' (同分路)' : '';
+          html += `<div class="hero-item-detail">  对位 ${d.target}: ${mark} 指数 ${formatAdvantage(d.value)}${tag}</div>`;
+        } else if (d.type === 'synergy') {
+          const mark = d.value > 0 ? '优异' : '冲突';
+          html += `<div class="hero-item-detail">  配合 ${d.target}: ${mark} 指数 ${formatAdvantage(d.value)}</div>`;
+        }
+      }
+    }
+  }
+  html += '<hr>';
+  recContent.innerHTML = html;
+}
+
+// ================= BP 流程 =================
 document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
 
@@ -344,7 +472,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('hero-input').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') submitPick();
   });
+  // 重置按钮
+  const resetBtn = document.createElement('button');
+  resetBtn.textContent = '重置本轮';
+  resetBtn.className = 'btn';
+  resetBtn.style.background = '#757575';
+  resetBtn.addEventListener('click', resetSession);
+  document.getElementById('bp-area').appendChild(resetBtn);
 });
+
+function resetSession() {
+  myTeam = [];
+  enemyTeam = [];
+  myPositions = [];
+  pickedHeroes = new Set();
+  currentStep = 0;
+  document.getElementById('my-team').textContent = '无';
+  document.getElementById('enemy-team').textContent = '无';
+  document.getElementById('hero-input').value = '';
+  document.getElementById('rec-content').innerHTML = '';
+  document.getElementById('log-output').textContent = '';
+  // 保留数据缓存，不刷新页面
+  log('🔄 已重置，可重新开始 BP');
+  // 显示设置界面
+  document.getElementById('setup-card').style.display = 'block';
+  document.getElementById('bp-area').style.display = 'none';
+}
 
 function startBP() {
   const sideSel = document.getElementById('side-select').value;
@@ -395,6 +548,7 @@ function updateUI() {
 }
 
 async function submitPick() {
+  if (isCalculating) return;
   if (currentStep >= draftSequence.length) return;
   const [turn, count] = draftSequence[currentStep];
   const input = document.getElementById('hero-input').value.trim();
@@ -449,7 +603,6 @@ async function submitPick() {
     picks.push({ name, pos });
   }
 
-  // 添加英雄
   for (const { name, pos } of picks) {
     pickedHeroes.add(name);
     if (turn === 'mine') {
@@ -462,9 +615,8 @@ async function submitPick() {
 
   document.getElementById('hero-input').value = '';
 
-  // 如果是敌方回合且不是第一步，触发推荐计算（异步）
   if (turn === 'enemy' && currentStep !== 0) {
-    showRecommendations();
+    await showRecommendations();
   }
 
   currentStep++;
@@ -477,15 +629,15 @@ async function showRecommendations() {
   const recContent = document.getElementById('rec-content');
   recCard.style.display = 'block';
   recContent.innerHTML = '正在计算推荐...';
+  isCalculating = true;
 
-  // 计算可用位置
   const availablePositions = POSITIONS.filter(p => !myPositions.includes(p));
   if (availablePositions.length === 0) {
     recContent.innerHTML = '我方位置已满';
+    isCalculating = false;
     return;
   }
 
-  // 候选英雄：所有未选英雄，且在该位置有出场率
   const candidates = {};
   availablePositions.forEach(p => candidates[p] = []);
   for (const [heroName, heroId] of Object.entries(heroDict)) {
@@ -498,11 +650,10 @@ async function showRecommendations() {
     }
   }
 
-  // 计算每个候选英雄加入后的预测胜率
   const finalResults = {};
   availablePositions.forEach(p => finalResults[p] = []);
 
-  // 使用异步分批计算，避免阻塞UI
+  // 分批计算，避免阻塞
   const tasks = [];
   for (const pos of availablePositions) {
     for (const name of candidates[pos]) {
@@ -510,119 +661,132 @@ async function showRecommendations() {
     }
   }
 
-  // 简化：直接同步计算（数据量可能大，但考虑到手机性能，使用 setTimeout 分批）
-  const batchSize = 5;
-  let index = 0;
-  function processBatch() {
-    const end = Math.min(index + batchSize, tasks.length);
-    for (; index < end; index++) {
-      const { name, pos } = tasks[index];
-      const simTeam = myTeam.concat([[name, pos]]);
-      const wr = predictLineupWinrate(simTeam, enemyTeam, sideIsBlue);
-      finalResults[pos].push({ score: wr, name });
-    }
-    if (index < tasks.length) {
-      setTimeout(processBatch, 0);
-    } else {
-      displayRecommendations(finalResults, availablePositions);
-    }
+  for (let i = 0; i < tasks.length; i++) {
+    const { name, pos } = tasks[i];
+    const simTeam = myTeam.concat([[name, pos]]);
+    const wr = await predictLineupWinrate(simTeam, enemyTeam, sideIsBlue);
+    finalResults[pos].push({ score: wr, name });
   }
-  processBatch();
+
+  displayRecommendations(finalResults, availablePositions);
+  isCalculating = false;
 }
 
-function displayRecommendations(finalResults, availablePositions) {
-  const recContent = document.getElementById('rec-content');
-  let html = '';
-  for (const pos of availablePositions) {
-    const sorted = finalResults[pos].sort((a,b)=>b.score-a.score);
-    if (!sorted.length) continue;
-    let displayList = sorted.slice(0, 3);
-    // 补充主位置英雄
-    const mainCount = displayList.filter(item => isMainPosition(item.name, pos)).length;
-    if (mainCount < 3) {
-      for (const item of sorted.slice(3)) {
-        if (mainCount >= 3) break;
-        if (isMainPosition(item.name, pos)) {
-          displayList.push(item);
-          // 重新排序
-          displayList.sort((a,b)=>b.score-a.score);
-          // 可能超过3个，但保留全部，因为都是主位置
+// ================= 最终分析（含装备与强势期） =================
+async function showFinalAnalysis() {
+  isCalculating = true;
+  try {
+    // 整体预测
+    const finalWr4d = await predictLineupWinrate(myTeam, enemyTeam, sideIsBlue);
+    const periodLabels = { early:'前期(0-12min)', mid:'中期(12-18min)', late:'后期(18min+)' };
+    const periodResults = {};
+    for (const key of Object.keys(periodLabels)) {
+      periodResults[key] = await predictLineupWinrate(myTeam, enemyTeam, sideIsBlue, key);
+    }
+
+    let analysis = '\n=== 最终胜率预测 ===\n';
+    analysis += `【整体预测】我方阵容胜率：${finalWr4d.toFixed(2)}% | 敌方：${(100 - finalWr4d).toFixed(2)}%\n`;
+    for (const [key, label] of Object.entries(periodLabels)) {
+      const wr = periodResults[key];
+      analysis += `【${label}】我方阵容胜率：${wr.toFixed(2)}% | 敌方：${(100 - wr).toFixed(2)}%\n`;
+    }
+
+    const earlyWr = periodResults.early, midWr = periodResults.mid, lateWr = periodResults.late;
+    if (earlyWr > midWr && earlyWr > lateWr) analysis += '💡 分析：我方阵容前期强势，应尽量在前期建立优势。\n';
+    else if (midWr > earlyWr && midWr > lateWr) analysis += '💡 分析：我方阵容中期发力，注意中期团战节奏。\n';
+    else if (lateWr > earlyWr && lateWr > midWr) analysis += '💡 分析：我方阵容后期更强，注意拖发育避战。\n';
+    else analysis += '⚖️ 分析：双方阵容各时期强度相对均衡。\n';
+
+    analysis += '\n--- 我方阵容深度评估 ---\n';
+    for (const pos of POSITIONS) {
+      for (const [heroName, heroPos] of myTeam) {
+        if (heroPos === pos) {
+          const impact = await evaluateHeroContribution(heroName, heroPos, myTeam, enemyTeam);
+          const impactVerdict = getContributionVerdict(impact);
+          const sign = impact > 0 ? '+' : '';
+          analysis += `\n【已选】${heroName} (位置: ${heroPos})\n`;
+          analysis += `   📈 对总胜率影响: ${sign}${impact.toFixed(2)}% [${impactVerdict}]\n`;
+          const details = evaluateSingleHeroDetails(heroName, heroPos, myTeam, enemyTeam);
+          for (const d of details) {
+            if (d.type === 'counter') {
+              const mark = d.value > 0 ? '克制' : (d.value < 0 ? '被克制' : '无克制');
+              const tag = d.isMatchup ? ' (同分路)' : '';
+              analysis += `   对位 ${d.target}: ${mark} 指数 ${formatAdvantage(d.value)}${tag}\n`;
+            } else if (d.type === 'synergy') {
+              const mark = d.value > 0 ? '优异' : '冲突';
+              analysis += `   配合 ${d.target}: ${mark} 指数 ${formatAdvantage(d.value)}\n`;
+            }
+          }
           break;
         }
       }
     }
-    html += `<div class="hero-group"><strong>${pos}</strong></div>`;
-    for (const { score, name } of displayList) {
-      const heroId = heroDict[name];
-      const posData = posCache[heroId] || {};
-      const posStr = Object.entries(posData).map(([p, rate]) => `${p} ${rate}%`).join(' / ');
-      const verdict = getVerdict(score);
-      html += `<div class="hero-item">${name} (${posStr}) [胜率:${score.toFixed(2)}%] [${verdict}]</div>`;
-      // 显示细节
-      const details = evaluateSingleHeroDetails(name, pos, myTeam, enemyTeam);
-      for (const d of details) {
-        if (d.type === 'counter') {
-          const mark = d.value > 0 ? '克制' : (d.value < 0 ? '被克制' : '无克制');
-          const tag = d.isMatchup ? ' (同分路)' : '';
-          html += `<div class="detail">  对位 ${d.target}: ${mark} 指数 ${formatAdvantage(d.value)}${tag}</div>`;
-        } else if (d.type === 'synergy') {
-          const mark = d.value > 0 ? '优异' : '冲突';
-          html += `<div class="detail">  配合 ${d.target}: ${mark} 指数 ${formatAdvantage(d.value)}</div>`;
+
+    // 尝试获取用户英雄的装备推荐和强势期
+    const userHero = myTeam.find(([n,p]) => p === userPosition);
+    if (userHero) {
+      const [uName, uPos] = userHero;
+      analysis += `\n【出装推荐】${uName} (${uPos})\n`;
+      try {
+        const heroId = heroDict[uName];
+        const posNum = POSITION_TO_NUM[uPos];
+        const equipUrl = `${API_BASE}/hero/equip?date=${getDateStr()}&heroId=${heroId}&position=${posNum}`;
+        const resp = await fetch(equipUrl);
+        if (resp.ok) {
+          const data = await resp.json();
+          const equipList = data.equipmentWinRates || [];
+          const filtered = equipList.filter(e => e.pickRate > 10).sort((a,b)=>b.pickRate-a.pickRate);
+          if (filtered.length) {
+            for (const e of filtered) {
+              analysis += `${e.equipmentName} 登场率:${e.pickRate.toFixed(2)}% 胜率:${e.winRate.toFixed(2)}%\n`;
+            }
+          } else {
+            analysis += '暂无出装数据\n';
+          }
+        } else {
+          analysis += '获取出装失败（可能跨域限制）\n';
         }
+      } catch (e) {
+        analysis += '获取出装失败（可能跨域限制）\n';
+      }
+
+      analysis += `\n【强势期分析】${uName}\n`;
+      try {
+        const heroId = heroDict[uName];
+        const periodUrl = `${API_BASE}/detail/specifyheroperiod?heroId=${heroId}`;
+        const resp = await fetch(periodUrl);
+        if (resp.ok) {
+          const data = await resp.json();
+          const periods = data.winRateByDuration || [];
+          if (periods.length) {
+            for (const item of periods) {
+              analysis += `${item.durationRange}胜率：${item.winRate.toFixed(2)}%\n`;
+            }
+          } else {
+            analysis += '暂无强势期数据\n';
+          }
+        } else {
+          analysis += '获取强势期失败（可能跨域限制）\n';
+        }
+      } catch (e) {
+        analysis += '获取强势期失败（可能跨域限制）\n';
       }
     }
+
+    log(analysis);
+    alert('BP 分析完成，请查看下方日志区域。');
+  } catch (e) {
+    console.error(e);
+    log(`分析出错：${e}`);
+    alert(`分析出错：${e}`);
+  } finally {
+    isCalculating = false;
   }
-  html += '<hr>';
-  recContent.innerHTML = html;
 }
 
-// ================= 最终分析 =================
-function showFinalAnalysis() {
-  const finalWr4d = predictLineupWinrate(myTeam, enemyTeam, sideIsBlue);
-  const periodLabels = { early:'前期(0-12min)', mid:'中期(12-18min)', late:'后期(18min+)' };
-  const periodResults = {};
-  for (const key of Object.keys(periodLabels)) {
-    periodResults[key] = predictLineupWinrate(myTeam, enemyTeam, sideIsBlue, key);
-  }
-
-  let analysis = '\n=== 最终胜率预测 ===\n';
-  analysis += `【整体预测】我方阵容胜率：${finalWr4d.toFixed(2)}% | 敌方：${(100 - finalWr4d).toFixed(2)}%\n`;
-  for (const [key, label] of Object.entries(periodLabels)) {
-    const wr = periodResults[key];
-    analysis += `【${label}】我方阵容胜率：${wr.toFixed(2)}% | 敌方：${(100 - wr).toFixed(2)}%\n`;
-  }
-
-  const earlyWr = periodResults.early, midWr = periodResults.mid, lateWr = periodResults.late;
-  if (earlyWr > midWr && earlyWr > lateWr) analysis += '💡 分析：我方阵容前期强势，应尽量在前期建立优势。\n';
-  else if (midWr > earlyWr && midWr > lateWr) analysis += '💡 分析：我方阵容中期发力，注意中期团战节奏。\n';
-  else if (lateWr > earlyWr && lateWr > midWr) analysis += '💡 分析：我方阵容后期更强，注意拖发育避战。\n';
-  else analysis += '⚖️ 分析：双方阵容各时期强度相对均衡。\n';
-
-  analysis += '\n--- 我方阵容深度评估 ---\n';
-  for (const pos of POSITIONS) {
-    for (const [heroName, heroPos] of myTeam) {
-      if (heroPos === pos) {
-        const impact = evaluateHeroContribution(heroName, heroPos, myTeam, enemyTeam);
-        const impactVerdict = getContributionVerdict(impact);
-        const sign = impact > 0 ? '+' : '';
-        analysis += `\n【已选】${heroName} (位置: ${heroPos})\n`;
-        analysis += `   📈 对总胜率影响: ${sign}${impact.toFixed(2)}% [${impactVerdict}]\n`;
-        const details = evaluateSingleHeroDetails(heroName, heroPos, myTeam, enemyTeam);
-        for (const d of details) {
-          if (d.type === 'counter') {
-            const mark = d.value > 0 ? '克制' : (d.value < 0 ? '被克制' : '无克制');
-            const tag = d.isMatchup ? ' (同分路)' : '';
-            analysis += `   对位 ${d.target}: ${mark} 指数 ${formatAdvantage(d.value)}${tag}\n`;
-          } else if (d.type === 'synergy') {
-            const mark = d.value > 0 ? '优异' : '冲突';
-            analysis += `   配合 ${d.target}: ${mark} 指数 ${formatAdvantage(d.value)}\n`;
-          }
-        }
-        break;
-      }
-    }
-  }
-
-  log(analysis);
-  alert('BP 分析完成，请查看下方日志区域。');
+function getDateStr() {
+  const now = new Date();
+  const offset = 8 * 60;
+  const localTime = new Date(now.getTime() + offset * 60000);
+  return localTime.toISOString().slice(0,10);
 }
