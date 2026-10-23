@@ -19,8 +19,6 @@ let myTeam = [];
 let enemyTeam = [];
 let myPositions = [];
 let pickedHeroes = new Set();
-let currentStep = 0;
-let draftSequence = [];
 let isCalculating = false;
 
 // ================= 工具函数 =================
@@ -364,257 +362,512 @@ function evaluateSingleHeroDetails(heroName, heroPos, myTeam, enemyTeam) {
   return details;
 }
 
-// ================= 推荐展示（字体调整） =================
+// ================= 自由阵容选择界面 =================
+let dataLoaded = false;
+const heroOrderCache = {};
+
+function getSlotInput(team, pos) {
+  return document.querySelector(`.combo-input[data-team="${team}"][data-pos="${pos}"]`);
+}
+
+function getAllSlotInputs() {
+  return Array.from(document.querySelectorAll('.combo-input'));
+}
+
+function buildTeamSlots(team, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = POSITIONS.map((pos, index) => {
+    const inputId = `${team}-hero-${index}`;
+    const menuId = `${team}-menu-${index}`;
+    return `
+      <div class="hero-slot">
+        <label for="${inputId}">${pos}</label>
+        <div class="combobox">
+          <input
+            id="${inputId}"
+            class="combo-input"
+            type="text"
+            data-team="${team}"
+            data-pos="${pos}"
+            data-last-valid=""
+            placeholder="选择或输入英雄"
+            autocomplete="off"
+            aria-autocomplete="list"
+            aria-controls="${menuId}"
+            aria-expanded="false"
+            disabled
+          />
+          <button class="combo-toggle" type="button" aria-label="展开${pos}英雄列表" aria-controls="${menuId}" aria-expanded="false" disabled>▾</button>
+          <div class="combo-menu" id="${menuId}" role="listbox" hidden></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  container.querySelectorAll('.combo-input').forEach(input => {
+    const menu = input.parentElement.querySelector('.combo-menu');
+    const toggle = input.parentElement.querySelector('.combo-toggle');
+
+    input.addEventListener('focus', () => openHeroMenu(input));
+    input.addEventListener('input', () => openHeroMenu(input));
+    input.addEventListener('change', () => commitHeroInput(input));
+    input.addEventListener('blur', () => {
+      setTimeout(() => closeHeroMenu(input), 120);
+    });
+    input.addEventListener('keydown', event => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        openHeroMenu(input);
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        commitHeroInput(input);
+        closeHeroMenu(input);
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        closeHeroMenu(input);
+        input.blur();
+      }
+    });
+
+    toggle.addEventListener('mousedown', event => event.preventDefault());
+    toggle.addEventListener('click', () => {
+      if (menu.hidden) {
+        input.focus();
+        openHeroMenu(input);
+      } else {
+        closeHeroMenu(input);
+      }
+    });
+
+    // 点击选项时保留输入框焦点，避免先触发未完成的输入校验。
+    menu.addEventListener('pointerdown', event => {
+      if (event.target.closest('.combo-option')) event.preventDefault();
+    });
+  });
+}
+
+function setHeroControlsEnabled(enabled) {
+  getAllSlotInputs().forEach(input => { input.disabled = !enabled; });
+  document.querySelectorAll('.combo-toggle').forEach(button => { button.disabled = !enabled; });
+}
+
+function getHeroOrder(pos) {
+  if (heroOrderCache[pos]) return heroOrderCache[pos];
+  heroOrderCache[pos] = Object.entries(heroDict)
+    .sort(([nameA, idA], [nameB, idB]) => {
+      const rateA = Number((posCache[idA] || {})[pos] || 0);
+      const rateB = Number((posCache[idB] || {})[pos] || 0);
+      return rateB - rateA || nameA.localeCompare(nameB, 'zh-CN');
+    })
+    .map(([name]) => name);
+  return heroOrderCache[pos];
+}
+
+function openHeroMenu(input) {
+  if (!dataLoaded || input.disabled) return;
+  closeAllHeroMenus(input);
+  renderHeroMenu(input);
+  const menu = input.parentElement.querySelector('.combo-menu');
+  const toggle = input.parentElement.querySelector('.combo-toggle');
+  menu.hidden = false;
+  input.setAttribute('aria-expanded', 'true');
+  toggle.setAttribute('aria-expanded', 'true');
+}
+
+function closeHeroMenu(input) {
+  const menu = input.parentElement.querySelector('.combo-menu');
+  const toggle = input.parentElement.querySelector('.combo-toggle');
+  menu.hidden = true;
+  input.setAttribute('aria-expanded', 'false');
+  toggle.setAttribute('aria-expanded', 'false');
+}
+
+function closeAllHeroMenus(exceptInput = null) {
+  getAllSlotInputs().forEach(input => {
+    if (input !== exceptInput) closeHeroMenu(input);
+  });
+}
+
+function renderHeroMenu(input) {
+  const pos = input.dataset.pos;
+  const menu = input.parentElement.querySelector('.combo-menu');
+  const committedName = input.dataset.lastValid || '';
+  const query = input.value.trim() === committedName ? '' : input.value.trim();
+  const selectedElsewhere = new Set(
+    getAllSlotInputs()
+      .filter(other => other !== input)
+      .map(other => other.dataset.lastValid || '')
+      .filter(Boolean)
+  );
+  const names = getHeroOrder(pos).filter(name => !query || name.includes(query));
+
+  menu.innerHTML = '';
+  if (!names.length) {
+    const empty = document.createElement('div');
+    empty.className = 'combo-empty';
+    empty.textContent = '没有匹配英雄，可按 Enter 尝试模糊识别';
+    menu.appendChild(empty);
+    return;
+  }
+
+  for (const name of names) {
+    const heroId = heroDict[name];
+    const posRate = (posCache[heroId] || {})[pos];
+    const option = document.createElement('button');
+    option.type = 'button';
+    option.className = 'combo-option';
+    option.dataset.heroName = name;
+    option.setAttribute('role', 'option');
+    if (name === committedName) option.classList.add('selected');
+
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = name;
+    const rateSpan = document.createElement('small');
+    const alreadySelected = selectedElsewhere.has(name);
+    rateSpan.textContent = alreadySelected
+      ? '已选择'
+      : (posRate !== undefined ? `${Number(posRate).toFixed(2)}%` : '非常规分路');
+    rateSpan.title = posRate !== undefined ? `${name}在${pos}的出场率` : '';
+
+    option.append(nameSpan, rateSpan);
+    option.disabled = alreadySelected;
+    option.addEventListener('click', () => selectHero(input, name));
+    menu.appendChild(option);
+  }
+}
+
+function revertHeroInput(input) {
+  const previous = input.dataset.lastValid || '';
+  input.value = previous;
+  input.classList.toggle('has-value', Boolean(previous));
+  closeHeroMenu(input);
+}
+
+function commitHeroInput(input) {
+  const rawName = input.value.trim();
+  const previous = input.dataset.lastValid || '';
+  if (rawName === previous) {
+    input.classList.toggle('has-value', Boolean(previous));
+    return true;
+  }
+
+  if (!rawName) {
+    input.value = '';
+    input.dataset.lastValid = '';
+    input.classList.remove('has-value');
+    closeHeroMenu(input);
+    handleDraftChange();
+    return true;
+  }
+
+  let heroName = rawName;
+  if (!heroDict[heroName]) {
+    const resolved = resolveHeroName(rawName);
+    if (!resolved.name) {
+      alert(resolved.msg);
+      revertHeroInput(input);
+      return false;
+    }
+    if (!window.confirm(`${resolved.msg}\n是否使用？`)) {
+      revertHeroInput(input);
+      return false;
+    }
+    heroName = resolved.name;
+  }
+
+  const duplicate = getAllSlotInputs().some(other =>
+    other !== input && (other.dataset.lastValid || other.value.trim()) === heroName
+  );
+  if (duplicate) {
+    alert(`${heroName} 已被选择，不能重复使用！`);
+    revertHeroInput(input);
+    return false;
+  }
+
+  input.value = heroName;
+  input.dataset.lastValid = heroName;
+  input.classList.add('has-value');
+  closeHeroMenu(input);
+  handleDraftChange();
+  return true;
+}
+
+function selectHero(input, heroName) {
+  input.value = heroName;
+  input.dataset.lastValid = heroName;
+  input.classList.add('has-value');
+  closeHeroMenu(input);
+  handleDraftChange();
+}
+
+function syncTeamsFromSlots(showErrors = false) {
+  const nextMyTeam = [];
+  const nextEnemyTeam = [];
+  const nextPicked = new Set();
+
+  for (const team of ['mine', 'enemy']) {
+    for (const pos of POSITIONS) {
+      const input = getSlotInput(team, pos);
+      const heroName = input.value.trim();
+      if (!heroName) continue;
+      if (!heroDict[heroName]) {
+        if (showErrors) alert(`请先确认${team === 'mine' ? '我方' : '敌方'}${pos}的英雄名称。`);
+        return false;
+      }
+      if (nextPicked.has(heroName)) {
+        if (showErrors) alert(`${heroName} 被重复选择，请检查阵容。`);
+        return false;
+      }
+      nextPicked.add(heroName);
+      (team === 'mine' ? nextMyTeam : nextEnemyTeam).push([heroName, pos]);
+    }
+  }
+
+  myTeam = nextMyTeam;
+  enemyTeam = nextEnemyTeam;
+  myPositions = myTeam.map(([, pos]) => pos);
+  pickedHeroes = nextPicked;
+  sideIsBlue = document.getElementById('side-select').value === 'blue';
+  userPosition = document.getElementById('pos-select').value;
+  return true;
+}
+
+function getDefaultStatus() {
+  if (!dataLoaded) return '英雄数据加载失败，请刷新页面重试。';
+  if (!myTeam.length && !enemyTeam.length) return '请直接在左右两侧选择英雄，无需按照选人顺序填写。';
+  if (myTeam.length === 5 && enemyTeam.length === 5) {
+    return userPosition
+      ? '双方阵容已完整，可以开始最终胜率与强势期分析。'
+      : '双方阵容已完整，请选择“我的位置”后开始分析。';
+  }
+  if (myTeam.length && enemyTeam.length) {
+    return `当前已选：我方 ${myTeam.length}/5，敌方 ${enemyTeam.length}/5。可继续调整或获取推荐。`;
+  }
+  return `当前已选：我方 ${myTeam.length}/5，敌方 ${enemyTeam.length}/5。双方至少各选一名英雄后可获取推荐。`;
+}
+
+function refreshUI(statusMessage = null) {
+  document.getElementById('my-count').textContent = `${myTeam.length} / 5`;
+  document.getElementById('enemy-count').textContent = `${enemyTeam.length} / 5`;
+  document.getElementById('status-text').textContent = statusMessage || getDefaultStatus();
+
+  const recommendBtn = document.getElementById('recommend-btn');
+  const analyzeBtn = document.getElementById('analyze-btn');
+  recommendBtn.disabled = !dataLoaded || isCalculating || !myTeam.length || !enemyTeam.length || myTeam.length >= 5;
+  analyzeBtn.disabled = !dataLoaded || isCalculating || myTeam.length !== 5 || enemyTeam.length !== 5 || !userPosition;
+}
+
+function handleDraftChange() {
+  syncTeamsFromSlots(false);
+  document.getElementById('rec-card').hidden = true;
+  document.getElementById('rec-content').innerHTML = '';
+  refreshUI();
+}
+
+function updateSideLabels() {
+  const blue = document.getElementById('side-select').value === 'blue';
+  document.getElementById('my-side-label').textContent = blue ? '蓝方' : '红方';
+  document.getElementById('enemy-side-label').textContent = blue ? '红方' : '蓝方';
+  document.getElementById('my-panel').classList.toggle('red-side', !blue);
+  document.getElementById('enemy-panel').classList.toggle('blue-side', blue);
+}
+
+function resetSession() {
+  closeAllHeroMenus();
+  getAllSlotInputs().forEach(input => {
+    input.value = '';
+    input.dataset.lastValid = '';
+    input.classList.remove('has-value');
+  });
+  myTeam = [];
+  enemyTeam = [];
+  myPositions = [];
+  pickedHeroes = new Set();
+  document.getElementById('rec-card').hidden = true;
+  document.getElementById('rec-content').innerHTML = '';
+  document.getElementById('log-output').textContent = '';
+  log('🔄 已清空双方阵容，阵营和位置设置保持不变。');
+  refreshUI('已清空阵容，可以重新自由选择双方英雄。');
+}
+
+// ================= 推荐展示 =================
 function displayRecommendations(finalResults, availablePositions) {
   const recContent = document.getElementById('rec-content');
-  let html = '';
+  recContent.innerHTML = '';
+
   for (const pos of availablePositions) {
-    const sorted = finalResults[pos].sort((a,b)=>b.score-a.score);
+    const sorted = finalResults[pos].sort((a, b) => b.score - a.score);
     if (!sorted.length) continue;
-    let displayList = sorted.slice(0, 3);
+    const displayList = sorted.slice(0, 3);
     const mainCount = displayList.filter(item => isMainPosition(item.name, pos)).length;
     if (mainCount < 3) {
       for (const item of sorted.slice(3)) {
-        if (mainCount >= 3) break;
         if (isMainPosition(item.name, pos)) {
           displayList.push(item);
           break;
         }
       }
     }
-    html += `<div class="hero-group"><strong>${pos}</strong></div>`;
+
+    const group = document.createElement('div');
+    group.className = 'hero-group';
+    group.textContent = pos;
+    recContent.appendChild(group);
+
     for (const { score, name } of displayList) {
       const heroId = heroDict[name];
       const posData = posCache[heroId] || {};
       const posStr = Object.entries(posData).map(([p, rate]) => `${p} ${rate}%`).join(' / ');
-      const verdict = getVerdict(score);
-      html += `<div class="hero-item"><span class="hero-item-main">${name} (${posStr}) [胜率:${score.toFixed(2)}%] [${verdict}]</span></div>`;
+      const item = document.createElement('div');
+      item.className = 'hero-item';
+
+      const mainRow = document.createElement('div');
+      mainRow.className = 'rec-main-row';
+      const main = document.createElement('span');
+      main.className = 'hero-item-main';
+      main.textContent = `${name} · 阵容胜率 ${score.toFixed(2)}% · ${getVerdict(score)}`;
+      main.title = posStr;
+      const fillButton = document.createElement('button');
+      fillButton.type = 'button';
+      fillButton.className = 'rec-fill';
+      fillButton.textContent = '填入我方';
+      fillButton.addEventListener('click', () => {
+        const input = getSlotInput('mine', pos);
+        if (!input || input.value || pickedHeroes.has(name)) return;
+        selectHero(input, name);
+        log(`📝 已将推荐英雄 ${name} 填入我方${pos}。`);
+      });
+      mainRow.append(main, fillButton);
+      item.appendChild(mainRow);
+
       const details = evaluateSingleHeroDetails(name, pos, myTeam, enemyTeam);
-      for (const d of details) {
-        if (d.type === 'counter') {
-          const mark = d.value > 0 ? '克制' : (d.value < 0 ? '被克制' : '无克制');
-          const tag = d.isMatchup ? ' (同分路)' : '';
-          html += `<div class="hero-item-detail">  对位 ${d.target}: ${mark} 指数 ${formatAdvantage(d.value)}${tag}</div>`;
-        } else if (d.type === 'synergy') {
-          const mark = d.value > 0 ? '优异' : '冲突';
-          html += `<div class="hero-item-detail">  配合 ${d.target}: ${mark} 指数 ${formatAdvantage(d.value)}</div>`;
+      for (const detail of details) {
+        const detailEl = document.createElement('div');
+        detailEl.className = 'hero-item-detail';
+        if (detail.type === 'counter') {
+          const mark = detail.value > 0 ? '克制' : (detail.value < 0 ? '被克制' : '无克制');
+          const tag = detail.isMatchup ? '（同分路）' : '';
+          detailEl.textContent = `对位 ${detail.target}：${mark}指数 ${formatAdvantage(detail.value)}${tag}`;
+        } else {
+          const mark = detail.value > 0 ? '配合优异' : '配合冲突';
+          detailEl.textContent = `配合 ${detail.target}：${mark} ${formatAdvantage(detail.value)}`;
         }
+        item.appendChild(detailEl);
       }
+      recContent.appendChild(item);
     }
   }
-  html += '<hr>';
-  recContent.innerHTML = html;
 }
 
-// ================= BP 流程 =================
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadData();
-
-  document.getElementById('start-btn').addEventListener('click', startBP);
-  document.getElementById('submit-btn').addEventListener('click', submitPick);
-  document.getElementById('hero-input').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') submitPick();
-  });
-  // 重置按钮
-  const resetBtn = document.createElement('button');
-  resetBtn.textContent = '重置本轮';
-  resetBtn.className = 'btn';
-  resetBtn.style.background = '#757575';
-  resetBtn.addEventListener('click', resetSession);
-  document.getElementById('bp-area').appendChild(resetBtn);
-});
-
-function resetSession() {
-  myTeam = [];
-  enemyTeam = [];
-  myPositions = [];
-  pickedHeroes = new Set();
-  currentStep = 0;
-  document.getElementById('my-team').textContent = '无';
-  document.getElementById('enemy-team').textContent = '无';
-  document.getElementById('hero-input').value = '';
-  document.getElementById('rec-content').innerHTML = '';
-  document.getElementById('log-output').textContent = '';
-  log('🔄 已重置，可重新开始 BP');
-  document.getElementById('setup-card').style.display = 'block';
-  document.getElementById('bp-area').style.display = 'none';
-}
-
-function startBP() {
-  const sideSel = document.getElementById('side-select').value;
-  sideIsBlue = (sideSel === 'blue');
-  userPosition = document.getElementById('pos-select').value;
-  if (!userPosition) {
-    alert('请选择你的位置');
-    return;
-  }
-  myTeam = [];
-  enemyTeam = [];
-  myPositions = [];
-  pickedHeroes = new Set();
-  currentStep = 0;
-
-  if (sideIsBlue) {
-    draftSequence = [['mine',1], ['enemy',2], ['mine',2], ['enemy',2], ['mine',2], ['enemy',1]];
-  } else {
-    draftSequence = [['enemy',1], ['mine',2], ['enemy',2], ['mine',2], ['enemy',2], ['mine',1]];
-  }
-
-  document.getElementById('setup-card').style.display = 'none';
-  document.getElementById('bp-area').style.display = 'block';
-  log(`✅ 开始 BP，阵营：${sideIsBlue ? '蓝方' : '红方'}，你的位置：${userPosition}`);
-  updateUI();
-}
-
-function updateUI() {
-  const statusEl = document.getElementById('status-text');
-  const myTeamEl = document.getElementById('my-team');
-  const enemyTeamEl = document.getElementById('enemy-team');
-
-  myTeamEl.textContent = myTeam.map(([n,p]) => `${n}(${p})`).join(' ') || '无';
-  enemyTeamEl.textContent = enemyTeam.map(([n,p]) => `${n}(${p})`).join(' ') || '无';
-
-  if (currentStep >= draftSequence.length) {
-    statusEl.textContent = 'BP 已结束，正在分析...';
-    showFinalAnalysis();
-    return;
-  }
-  const [turn, count] = draftSequence[currentStep];
-  const sideStr = turn === 'mine' ? '我方' : '敌方';
-  const index = turn === 'mine' ? myTeam.length + 1 : enemyTeam.length + 1;
-  let prompt = `【${sideStr}】本轮需选第 ${index}`;
-  if (count > 1) prompt += `、${index+1}`;
-  prompt += ` 个英雄`;
-  statusEl.textContent = prompt;
-}
-
-async function submitPick() {
-  if (isCalculating) return;
-  if (currentStep >= draftSequence.length) return;
-  const [turn, count] = draftSequence[currentStep];
-  const input = document.getElementById('hero-input').value.trim();
-  if (!input) { alert('请输入英雄名称'); return; }
-
-  const inputs = cleanText(input).split(',');
-  if (inputs.length < count) {
-    alert(`数量不足，需要 ${count} 个英雄`);
-    return;
-  }
-
-  const picks = [];
-  const currentPositions = [];
-  for (let i = 0; i < count; i++) {
-    let { name, pos } = parseHeroInput(inputs[i]);
-    if (!heroDict[name]) {
-      const resolved = resolveHeroName(name);
-      if (resolved.name) {
-        const confirm = window.confirm(resolved.msg + '\n是否使用？');
-        if (!confirm) return;
-        name = resolved.name;
-      } else {
-        alert(resolved.msg);
-        return;
-      }
-    }
-    if (pickedHeroes.has(name)) {
-      alert(`${name} 已被选过！`);
-      return;
-    }
-    if (!pos) {
-      const heroId = heroDict[name];
-      const positions = posCache[heroId] || {};
-      const defaultPos = Object.keys(positions).sort((a,b)=>positions[b]-positions[a])[0];
-      if (defaultPos) {
-        const confirm = window.confirm(`识别 ${name} 为【${defaultPos}】，是否确认？`);
-        if (confirm) pos = defaultPos;
-      }
-      if (!pos) {
-        pos = prompt(`请输入 ${name} 的位置（${POSITIONS.join('/')}）`);
-        if (!pos || !POSITIONS.includes(pos)) {
-          alert('位置无效');
-          return;
-        }
-      }
-    }
-    if (turn === 'mine' && (myPositions.includes(pos) || currentPositions.includes(pos))) {
-      alert(`位置【${pos}】已被我方锁定！`);
-      return;
-    }
-    currentPositions.push(pos);
-    picks.push({ name, pos });
-  }
-
-  for (const { name, pos } of picks) {
-    pickedHeroes.add(name);
-    if (turn === 'mine') {
-      myTeam.push([name, pos]);
-      myPositions.push(pos);
-    } else {
-      enemyTeam.push([name, pos]);
-    }
-  }
-
-  document.getElementById('hero-input').value = '';
-
-  if (turn === 'enemy' && currentStep !== 0) {
-    await showRecommendations();
-  }
-
-  currentStep++;
-  updateUI();
-}
-
-// ================= 推荐功能 =================
+// ================= 推荐与分析 =================
 async function showRecommendations() {
+  if (isCalculating || !dataLoaded || !syncTeamsFromSlots(true)) return;
+  if (!myTeam.length || !enemyTeam.length) {
+    alert('双方至少各选一名英雄后才能获取推荐。');
+    return;
+  }
+
   const recCard = document.getElementById('rec-card');
   const recContent = document.getElementById('rec-content');
-  recCard.style.display = 'block';
-  recContent.innerHTML = '正在计算推荐...';
+  recCard.hidden = false;
+  recContent.textContent = '正在计算推荐...';
   isCalculating = true;
+  let resultStatus = '推荐已更新；阵容有任何变化后，可重新获取推荐。';
+  refreshUI('正在根据当前双方阵容计算推荐...');
 
-  const availablePositions = POSITIONS.filter(p => !myPositions.includes(p));
-  if (availablePositions.length === 0) {
-    recContent.innerHTML = '我方位置已满';
+  try {
+    const availablePositions = POSITIONS.filter(pos => !myPositions.includes(pos));
+    if (!availablePositions.length) {
+      recContent.textContent = '我方五个位置已满，可以直接进行完整阵容分析。';
+      resultStatus = '我方五个位置已满，可以直接进行完整阵容分析。';
+      return;
+    }
+
+    const candidates = {};
+    const finalResults = {};
+    availablePositions.forEach(pos => {
+      candidates[pos] = [];
+      finalResults[pos] = [];
+    });
+
+    for (const [heroName, heroId] of Object.entries(heroDict)) {
+      if (pickedHeroes.has(heroName)) continue;
+      const posData = posCache[heroId] || {};
+      for (const pos of availablePositions) {
+        if (posData[pos] >= 10) candidates[pos].push(heroName);
+      }
+    }
+
+    for (const pos of availablePositions) {
+      for (const name of candidates[pos]) {
+        const simTeam = myTeam.concat([[name, pos]]);
+        const score = await predictLineupWinrate(simTeam, enemyTeam, sideIsBlue);
+        finalResults[pos].push({ score, name });
+      }
+    }
+
+    displayRecommendations(finalResults, availablePositions);
+    resultStatus = '推荐已更新；可以直接填入推荐英雄，也可以继续手动调整阵容。';
+  } catch (error) {
+    console.error(error);
+    recContent.textContent = `推荐计算出错：${error}`;
+    log(`推荐计算出错：${error}`);
+    resultStatus = '推荐计算失败，请调整阵容后重试。';
+  } finally {
     isCalculating = false;
+    refreshUI(resultStatus);
+  }
+}
+
+async function runFinalAnalysis() {
+  if (isCalculating || !dataLoaded || !syncTeamsFromSlots(true)) return;
+  if (!userPosition) {
+    alert('请先选择你的位置。');
+    return;
+  }
+  if (myTeam.length !== 5 || enemyTeam.length !== 5) {
+    alert('请先补齐我方和敌方各五名英雄。');
     return;
   }
 
-  const candidates = {};
-  availablePositions.forEach(p => candidates[p] = []);
-  for (const [heroName, heroId] of Object.entries(heroDict)) {
-    if (pickedHeroes.has(heroName)) continue;
-    const posData = posCache[heroId] || {};
-    for (const pos of availablePositions) {
-      if (posData[pos] >= 10) {
-        candidates[pos].push(heroName);
-      }
-    }
-  }
-
-  const finalResults = {};
-  availablePositions.forEach(p => finalResults[p] = []);
-
-  const tasks = [];
-  for (const pos of availablePositions) {
-    for (const name of candidates[pos]) {
-      tasks.push({ name, pos });
-    }
-  }
-
-  for (let i = 0; i < tasks.length; i++) {
-    const { name, pos } = tasks[i];
-    const simTeam = myTeam.concat([[name, pos]]);
-    const wr = await predictLineupWinrate(simTeam, enemyTeam, sideIsBlue);
-    finalResults[pos].push({ score: wr, name });
-  }
-
-  displayRecommendations(finalResults, availablePositions);
-  isCalculating = false;
+  closeAllHeroMenus();
+  document.getElementById('log-output').textContent = '';
+  refreshUI('正在分析双方完整阵容...');
+  await showFinalAnalysis();
+  refreshUI('分析完成，结果已输出到下方日志区域。');
 }
 
-// ================= 最终分析（完全使用缓存） =================
+document.addEventListener('DOMContentLoaded', async () => {
+  buildTeamSlots('mine', 'my-team-slots');
+  buildTeamSlots('enemy', 'enemy-team-slots');
+  updateSideLabels();
+  syncTeamsFromSlots(false);
+  refreshUI('正在加载英雄数据...');
+
+  document.getElementById('side-select').addEventListener('change', () => {
+    sideIsBlue = document.getElementById('side-select').value === 'blue';
+    updateSideLabels();
+    document.getElementById('rec-card').hidden = true;
+    refreshUI();
+  });
+  document.getElementById('pos-select').addEventListener('change', () => {
+    userPosition = document.getElementById('pos-select').value;
+    refreshUI();
+  });
+  document.getElementById('recommend-btn').addEventListener('click', showRecommendations);
+  document.getElementById('analyze-btn').addEventListener('click', runFinalAnalysis);
+  document.getElementById('reset-btn').addEventListener('click', resetSession);
+  document.addEventListener('click', event => {
+    if (!event.target.closest('.combobox')) closeAllHeroMenus();
+  });
+
+  dataLoaded = await loadData();
+  setHeroControlsEnabled(dataLoaded);
+  refreshUI(dataLoaded ? null : '英雄数据加载失败，请刷新页面重试。');
+});
+
 async function showFinalAnalysis() {
   isCalculating = true;
+  refreshUI('正在分析双方完整阵容...');
   try {
     const finalWr4d = await predictLineupWinrate(myTeam, enemyTeam, sideIsBlue);
     const periodLabels = { early:'前期(0-12min)', mid:'中期(12-18min)', late:'后期(18min+)' };
@@ -697,5 +950,6 @@ async function showFinalAnalysis() {
     alert(`分析出错：${e}`);
   } finally {
     isCalculating = false;
+    refreshUI();
   }
 }
