@@ -5,9 +5,9 @@ let posCache = {};
 let wrCache = {};
 let anaCache = {};
 let periodCache = {};
-let globalWinRate = {};
 let equipCache = {};      // 新增装备缓存
 let sessionWrOverrides = {}; // 手动输入覆盖
+let pairShrinkageK = null;
 
 const POSITION_MAP = {"0":"对抗路","1":"中路","2":"发育路","3":"打野","4":"辅助"};
 const POSITIONS = Object.values(POSITION_MAP);
@@ -116,13 +116,12 @@ function similarity(s1, s2) {
 // ================= 数据加载 =================
 async function loadData() {
   try {
-    const [heroesRes, posRes, wrRes, anaRes, periodRes, globalRes, equipRes] = await Promise.all([
+    const [heroesRes, posRes, wrRes, anaRes, periodRes, equipRes] = await Promise.all([
       fetch('data/hero_list.json'),
       fetch('data/position_cache.json'),
       fetch('data/win_rate_cache.json'),
       fetch('data/hero_analysis_cache.json'),
       fetch('data/hero_period_cache.json'),
-      fetch('data/global_win_rate_cache.json'),
       fetch('data/equip_cache.json')
     ]);
     heroDict = await heroesRes.json();
@@ -131,9 +130,10 @@ async function loadData() {
     wrCache = await wrRes.json();
     anaCache = await anaRes.json();
     periodCache = await periodRes.json();
-    globalWinRate = await globalRes.json();
     equipCache = await equipRes.json();
-    log('✅ 数据加载成功');
+    pairShrinkageK = null;
+    const priorStrength = getPairShrinkageK();
+    log(`✅ 数据加载成功（英雄对收缩先验强度 ${priorStrength.toFixed(1)} 场）`);
     return true;
   } catch (e) {
     log('❌ 数据加载失败，请刷新页面或检查网络');
@@ -203,158 +203,227 @@ function getAnalysis(heroId) {
   return anaCache[idStr] || { counters: [], counteredBy: [], goodSynergies: [], badSynergies: [] };
 }
 
-function computeHeroFeatures(heroName, heroPos, heroWr, team, enemyTeam) {
-  const heroId = heroDict[heroName];
-  const analysis = getAnalysis(heroId);
-  const discount = Math.max(0, 1 - Math.abs(heroWr - 0.5) * 5.8843);
+function clampProbability(value) {
+  return Math.max(0.01, Math.min(0.99, value));
+}
 
-  const counters = {};
-  analysis.counters.forEach(item => counters[item.heroName] = item.advantageIndex);
-  const counteredBy = {};
-  analysis.counteredBy.forEach(item => counteredBy[item.heroName] = item.advantageIndex);
+function logit(value) {
+  const p = clampProbability(value);
+  return Math.log(p / (1 - p));
+}
 
-  let posAdvList = [];
-  let negAdvSum = 0;
-
-  for (const [eName, ePos] of enemyTeam) {
-    let adv = counters[eName] || counteredBy[eName] || 0;
-    if (adv > 0) {
-      if (ePos === heroPos) adv *= 1.0605;
-      posAdvList.push(adv);
-    } else if (adv < 0) {
-      let R = adv / 100;
-      let fR = R * (1 + Math.abs(R) * 7.8882);
-      let penalized = fR * 100;
-      if (ePos === heroPos) penalized *= 1.0605;
-      negAdvSum += penalized;
-    }
+function sigmoid(value) {
+  if (value >= 0) {
+    const exp = Math.exp(-value);
+    return 1 / (1 + exp);
   }
-  posAdvList.sort((a,b)=>b-a);
-  let decayedPosAdv = 0;
-  posAdvList.forEach((val, idx) => {
-    if (idx === 0) decayedPosAdv += val * 1.0;
-    else if (idx === 1) decayedPosAdv += val * 0.5649;
-    else decayedPosAdv += val * 0.1178;
-  });
-  const finalCounterScore = decayedPosAdv + negAdvSum;
+  const exp = Math.exp(value);
+  return exp / (1 + exp);
+}
 
-  const goodSyn = {};
-  analysis.goodSynergies.forEach(item => goodSyn[item.heroName] = item.synergyIndex);
-  const badSyn = {};
-  analysis.badSynergies.forEach(item => badSyn[item.heroName] = item.synergyIndex);
+function findPairEntry(entries, heroName) {
+  return (entries || []).find(item => item.heroName === heroName) || null;
+}
 
-  let discountedCombo = 0;
-  for (const [tName] of team) {
-    if (tName !== heroName) {
-      const syn = goodSyn[tName] || badSyn[tName] || 0;
-      discountedCombo += syn * discount;
+function estimatePairShrinkageK() {
+  const observations = [];
+  const addObservation = (value, totalMatches) => {
+    const n = Number(totalMatches);
+    const index = Number(value);
+    if (Number.isFinite(n) && n > 0 && Number.isFinite(index)) {
+      observations.push({ p: clampProbability(0.5 + index / 100), n });
     }
+  };
+
+  for (const analysis of Object.values(anaCache)) {
+    // counteredBy 与 counters 完全镜像，只取一侧避免重复样本。
+    (analysis.counters || []).forEach(item => addObservation(item.advantageIndex, item.totalMatches));
+    (analysis.goodSynergies || []).forEach(item => addObservation(item.synergyIndex, item.totalMatches));
+    (analysis.badSynergies || []).forEach(item => addObservation(item.synergyIndex, item.totalMatches));
   }
-  return [finalCounterScore, discountedCombo];
+
+  if (observations.length < 2) return 0;
+
+  const mean = observations.reduce((sum, item) => sum + item.p, 0) / observations.length;
+  const observedVariance = observations.reduce((sum, item) => sum + (item.p - mean) ** 2, 0) / observations.length;
+  const samplingVariance = observations.reduce((sum, item) => sum + item.p * (1 - item.p) / item.n, 0) / observations.length;
+  const betweenPairVariance = observedVariance - samplingVariance;
+  if (!(betweenPairVariance > 1e-12)) return 0;
+
+  // Beta-Binomial 的共同先验：Var(p) = 0.25 / (k + 1)。
+  return Math.max(0, 0.25 / betweenPairVariance - 1);
+}
+
+function getPairShrinkageK() {
+  if (pairShrinkageK === null) {
+    pairShrinkageK = estimatePairShrinkageK();
+  }
+  return pairShrinkageK;
+}
+
+function getPairEffectSampleWeight(totalMatches) {
+  const n = Math.max(0, Number(totalMatches) || 0);
+  const k = getPairShrinkageK();
+  return n > 0 && k > 0 ? n / (n + k) : 1;
+}
+
+function indexToRelativeLogit(index, baseline) {
+  const p = clampProbability(baseline);
+  return logit(clampProbability(p + Number(index) / 100)) - logit(p);
+}
+
+function pairLogitToRelativeIndex(pairLogit, baseline) {
+  const p = clampProbability(baseline);
+  return (sigmoid(logit(p) + pairLogit) - p) * 100;
+}
+
+function getPredictionBaseline(heroName, heroPos, periodKey = null) {
+  if (periodKey) return getPeriodWinrate(heroDict[heroName], periodKey);
+  return getBaseWinrate(heroDict[heroName], heroPos, heroName) ?? 0.5;
+}
+
+function getCounterItem(heroName, enemyName) {
+  const analysis = getAnalysis(heroDict[heroName]);
+  return findPairEntry(analysis.counters, enemyName) || findPairEntry(analysis.counteredBy, enemyName);
+}
+
+function getSynergyItem(heroName, teammateName) {
+  const analysis = getAnalysis(heroDict[heroName]);
+  const direct = findPairEntry(analysis.goodSynergies, teammateName) || findPairEntry(analysis.badSynergies, teammateName);
+  if (direct) return direct;
+
+  const reverseAnalysis = getAnalysis(heroDict[teammateName]);
+  return findPairEntry(reverseAnalysis.goodSynergies, heroName) || findPairEntry(reverseAnalysis.badSynergies, heroName);
+}
+
+function getCounterPairLogit(heroName, heroPos, enemyName, enemyPos, periodKey = null) {
+  const item = getCounterItem(heroName, enemyName);
+  if (!item) return 0;
+
+  const index = Number(item.advantageIndex);
+  const ownBaseline = getPredictionBaseline(heroName, heroPos, periodKey);
+  const enemyBaseline = getPredictionBaseline(enemyName, enemyPos, periodKey);
+  const ownDelta = indexToRelativeLogit(index, ownBaseline);
+  const enemyDelta = indexToRelativeLogit(-index, enemyBaseline);
+  return (ownDelta - enemyDelta) * 0.5 * getPairEffectSampleWeight(item.totalMatches);
+}
+
+function computeCounterLogit(heroName, heroPos, enemyTeam, periodKey = null) {
+  let total = 0;
+  for (const [enemyName, enemyPos] of enemyTeam) {
+    total += getCounterPairLogit(heroName, heroPos, enemyName, enemyPos, periodKey);
+  }
+  return total;
+}
+
+function getSynergyPairLogit(heroName, heroPos, teammateName, teammatePos, periodKey = null) {
+  const item = getSynergyItem(heroName, teammateName);
+  if (!item) return 0;
+
+  const index = Number(item.synergyIndex);
+  const ownBaseline = getPredictionBaseline(heroName, heroPos, periodKey);
+  const teammateBaseline = getPredictionBaseline(teammateName, teammatePos, periodKey);
+  const ownDelta = indexToRelativeLogit(index, ownBaseline);
+  const teammateDelta = indexToRelativeLogit(index, teammateBaseline);
+  return (ownDelta + teammateDelta) * 0.5 * getPairEffectSampleWeight(item.totalMatches);
+}
+
+function computeSynergyLogitForHero(heroName, heroPos, team, periodKey = null) {
+  let total = 0;
+  for (const [teammateName, teammatePos] of team) {
+    if (teammateName === heroName) continue;
+    total += getSynergyPairLogit(heroName, heroPos, teammateName, teammatePos, periodKey);
+  }
+  return total;
+}
+
+function computeTeamCounterLogit(team, enemyTeam, periodKey = null) {
+  return team.reduce(
+    (sum, [heroName, heroPos]) => sum + computeCounterLogit(heroName, heroPos, enemyTeam, periodKey),
+    0
+  );
+}
+
+function computeTeamSynergyLogit(team, periodKey = null) {
+  // 每个同队英雄对从两端各出现一次，各分配一半即等价于只计算一次。
+  return team.reduce(
+    (sum, [heroName, heroPos]) => sum + computeSynergyLogitForHero(heroName, heroPos, team, periodKey) * 0.5,
+    0
+  );
+}
+
+async function getHeroWinrate(heroName, heroPos, periodKey) {
+  if (periodKey) return getPeriodWinrate(heroDict[heroName], periodKey);
+  let wr = getBaseWinrate(heroDict[heroName], heroPos, heroName);
+  if (wr === null) wr = await ensureWinrate(heroDict[heroName], heroName, heroPos);
+  return wr;
+}
+
+async function calculateLineupLogit(myTeam, enemyTeam, periodKey = null) {
+  const myLogits = [];
+  const enemyLogits = [];
+
+  for (const [heroName, heroPos] of myTeam) {
+    const wr = await getHeroWinrate(heroName, heroPos, periodKey);
+    myLogits.push(logit(wr));
+  }
+  for (const [heroName, heroPos] of enemyTeam) {
+    const wr = await getHeroWinrate(heroName, heroPos, periodKey);
+    enemyLogits.push(logit(wr));
+  }
+
+  const avgMy = myLogits.reduce((sum, value) => sum + value, 0) / myLogits.length;
+  const avgEnemy = enemyLogits.reduce((sum, value) => sum + value, 0) / enemyLogits.length;
+  const heroLogit = avgMy - avgEnemy;
+
+  const counterLogit = computeTeamCounterLogit(myTeam, enemyTeam, periodKey);
+  const mySynergyLogit = computeTeamSynergyLogit(myTeam, periodKey);
+  const enemySynergyLogit = computeTeamSynergyLogit(enemyTeam, periodKey);
+  const synergyLogit = mySynergyLogit - enemySynergyLogit;
+
+  return heroLogit + counterLogit + synergyLogit;
 }
 
 async function predictLineupWinrate(myTeam, enemyTeam, sideIsBlue, periodKey = null) {
-  const W_base = 1.0267, W_hero = 1.1811, W_counter = 1.2668, W_combo = 1.3774;
-  const S_base = getGlobalWinrateLog(sideIsBlue);
-
-  let myLogits = [], enemyLogits = [];
-  let totalCounterIndex = 0, totalComboIndex = 0;
-
-  for (const [myName, myPos] of myTeam) {
-    let wr;
-    if (periodKey) {
-      wr = getPeriodWinrate(heroDict[myName], periodKey);
-    } else {
-      wr = getBaseWinrate(heroDict[myName], myPos, myName);
-      if (wr === null) wr = await ensureWinrate(heroDict[myName], myName, myPos);
-    }
-    myLogits.push(Math.log(wr / (1 - wr)));
-    const [cScore, sScore] = computeHeroFeatures(myName, myPos, wr, myTeam, enemyTeam);
-    totalCounterIndex += cScore;
-    totalComboIndex += sScore;
-  }
-  for (const [eName, ePos] of enemyTeam) {
-    let wr;
-    if (periodKey) {
-      wr = getPeriodWinrate(heroDict[eName], periodKey);
-    } else {
-      wr = getBaseWinrate(heroDict[eName], ePos, eName);
-      if (wr === null) wr = await ensureWinrate(heroDict[eName], eName, ePos);
-    }
-    enemyLogits.push(Math.log(wr / (1 - wr)));
-    const [cScore, sScore] = computeHeroFeatures(eName, ePos, wr, enemyTeam, myTeam);
-    totalCounterIndex -= cScore;
-    totalComboIndex -= sScore;
-  }
-
-  const S_counter = totalCounterIndex / 100;
-  const S_combo = (totalComboIndex / 2) / 100;
-  const avgMy = myLogits.reduce((a,b)=>a+b,0) / myLogits.length;
-  const avgEnemy = enemyLogits.reduce((a,b)=>a+b,0) / enemyLogits.length;
-  const S_hero = avgMy - avgEnemy;
-
-  const S_total = W_base * S_base + W_hero * S_hero + W_counter * S_counter + W_combo * S_combo;
-  return (1 / (1 + Math.exp(-S_total))) * 100;
-}
-
-function getGlobalWinrateLog(sideIsBlue) {
-  const now = new Date();
-  const offset = 8 * 60;
-  const localTime = new Date(now.getTime() + offset * 60000);
-  const dateStr = localTime.toISOString().slice(0,10);
-  const cache = globalWinRate[dateStr];
-  if (cache) {
-    const blueRatio = cache.blue / 100;
-    const redRatio = cache.red / 100;
-    return sideIsBlue ? Math.log(blueRatio / redRatio) : -Math.log(blueRatio / redRatio);
-  }
-  return 0;
+  void sideIsBlue; // 阵营仅用于界面展示，不再参与胜率基准。
+  return sigmoid(await calculateLineupLogit(myTeam, enemyTeam, periodKey)) * 100;
 }
 
 async function evaluateHeroContribution(heroName, heroPos, myTeam, enemyTeam) {
   const heroId = heroDict[heroName];
   let wr = getBaseWinrate(heroId, heroPos, heroName);
   if (wr === null) wr = await ensureWinrate(heroId, heroName, heroPos);
-  const heroLogit = Math.log(wr / (1 - wr));
+  const heroLogit = logit(wr);
 
   const teamLogits = [];
   for (const [n,p] of myTeam) {
     let w = getBaseWinrate(heroDict[n], p, n);
     if (w === null) w = await ensureWinrate(heroDict[n], n, p);
-    teamLogits.push(Math.log(w / (1 - w)));
+    teamLogits.push(logit(w));
   }
   const teamAvg = teamLogits.reduce((a,b)=>a+b,0) / teamLogits.length;
   const baseContrib = heroLogit - teamAvg;
 
-  const [cScore, sScore] = computeHeroFeatures(heroName, heroPos, wr, myTeam, enemyTeam);
-  const counterContrib = (cScore / 100) * 1.2668;
-  const synergyContrib = ((sScore / 2) / 100) * 1.3774;
+  const counterContrib = computeCounterLogit(heroName, heroPos, enemyTeam);
+  const synergyContrib = computeSynergyLogitForHero(heroName, heroPos, myTeam) * 0.5;
 
   const totalLogit = baseContrib + counterContrib + synergyContrib;
-  const impactWr = (1 / (1 + Math.exp(-totalLogit)) - 0.5) * 100;
+  const impactWr = (sigmoid(totalLogit) - 0.5) * 100;
   return impactWr;
 }
 
 function evaluateSingleHeroDetails(heroName, heroPos, myTeam, enemyTeam) {
-  const heroId = heroDict[heroName];
-  const analysis = getAnalysis(heroId);
-  const counters = {};
-  analysis.counters.forEach(item => counters[item.heroName] = item.advantageIndex);
-  const counteredBy = {};
-  analysis.counteredBy.forEach(item => counteredBy[item.heroName] = item.advantageIndex);
-  const goodSyn = {};
-  analysis.goodSynergies.forEach(item => goodSyn[item.heroName] = item.synergyIndex);
-  const badSyn = {};
-  analysis.badSynergies.forEach(item => badSyn[item.heroName] = item.synergyIndex);
-
   const details = [];
   for (const [eName, ePos] of enemyTeam) {
-    const adv = counters[eName] || counteredBy[eName] || 0;
-    details.push({ type:'counter', target:eName, value:adv, isMatchup: heroPos === ePos });
+    const pairLogit = getCounterPairLogit(heroName, heroPos, eName, ePos);
+    const baseline = getPredictionBaseline(heroName, heroPos);
+    const value = pairLogitToRelativeIndex(pairLogit, baseline);
+    details.push({ type:'counter', target:eName, value, isMatchup: heroPos === ePos });
   }
-  for (const [tName] of myTeam) {
+  for (const [tName, tPos] of myTeam) {
     if (tName === heroName) continue;
-    const syn = goodSyn[tName] || badSyn[tName] || 0;
+    const pairLogit = getSynergyPairLogit(heroName, heroPos, tName, tPos);
+    const syn = pairLogitToRelativeIndex(pairLogit, getPredictionBaseline(heroName, heroPos));
     if (Math.abs(syn) >= 1.5) {
       details.push({ type:'synergy', target:tName, value:syn, isMatchup:false });
     }
