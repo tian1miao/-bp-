@@ -13,13 +13,20 @@ const POSITION_MAP = {"0":"对抗路","1":"中路","2":"发育路","3":"打野",
 const POSITIONS = Object.values(POSITION_MAP);
 const POSITION_TO_NUM = Object.fromEntries(Object.entries(POSITION_MAP).map(([k,v])=>[v,k]));
 
-let sideIsBlue = true;
 let userPosition = "";
 let myTeam = [];
 let enemyTeam = [];
 let myPositions = [];
 let pickedHeroes = new Set();
 let isCalculating = false;
+let draftRevision = 0;
+let liveWinrateRequestId = 0;
+let liveWinrateState = {
+  value: null,
+  note: '双方至少各选一名英雄后计算',
+  busy: false,
+  tone: 'idle'
+};
 
 // ================= 工具函数 =================
 function log(msg) {
@@ -352,41 +359,50 @@ function computeTeamSynergyLogit(team, periodKey = null) {
   );
 }
 
-async function getHeroWinrate(heroName, heroPos, periodKey) {
+async function getHeroWinrate(heroName, heroPos, periodKey, allowPrompt = true) {
   if (periodKey) return getPeriodWinrate(heroDict[heroName], periodKey);
   let wr = getBaseWinrate(heroDict[heroName], heroPos, heroName);
-  if (wr === null) wr = await ensureWinrate(heroDict[heroName], heroName, heroPos);
+  if (wr === null && allowPrompt) {
+    wr = await ensureWinrate(heroDict[heroName], heroName, heroPos);
+  }
   return wr;
 }
 
-async function calculateLineupLogit(myTeam, enemyTeam, periodKey = null) {
+async function calculateLineupLogit(myTeam, enemyTeam, periodKey = null, allowPrompt = true) {
   const myLogits = [];
   const enemyLogits = [];
+  const availableMyTeam = [];
+  const availableEnemyTeam = [];
 
   for (const [heroName, heroPos] of myTeam) {
-    const wr = await getHeroWinrate(heroName, heroPos, periodKey);
+    const wr = await getHeroWinrate(heroName, heroPos, periodKey, allowPrompt);
+    if (wr === null) continue;
+    availableMyTeam.push([heroName, heroPos]);
     myLogits.push(logit(wr));
   }
   for (const [heroName, heroPos] of enemyTeam) {
-    const wr = await getHeroWinrate(heroName, heroPos, periodKey);
+    const wr = await getHeroWinrate(heroName, heroPos, periodKey, allowPrompt);
+    if (wr === null) continue;
+    availableEnemyTeam.push([heroName, heroPos]);
     enemyLogits.push(logit(wr));
   }
+  if (!myLogits.length || !enemyLogits.length) return null;
 
   const avgMy = myLogits.reduce((sum, value) => sum + value, 0) / myLogits.length;
   const avgEnemy = enemyLogits.reduce((sum, value) => sum + value, 0) / enemyLogits.length;
   const heroLogit = avgMy - avgEnemy;
 
-  const counterLogit = computeTeamCounterLogit(myTeam, enemyTeam, periodKey);
-  const mySynergyLogit = computeTeamSynergyLogit(myTeam, periodKey);
-  const enemySynergyLogit = computeTeamSynergyLogit(enemyTeam, periodKey);
+  const counterLogit = computeTeamCounterLogit(availableMyTeam, availableEnemyTeam, periodKey);
+  const mySynergyLogit = computeTeamSynergyLogit(availableMyTeam, periodKey);
+  const enemySynergyLogit = computeTeamSynergyLogit(availableEnemyTeam, periodKey);
   const synergyLogit = mySynergyLogit - enemySynergyLogit;
 
   return heroLogit + counterLogit + synergyLogit;
 }
 
-async function predictLineupWinrate(myTeam, enemyTeam, sideIsBlue, periodKey = null) {
-  void sideIsBlue; // 阵营仅用于界面展示，不再参与胜率基准。
-  return sigmoid(await calculateLineupLogit(myTeam, enemyTeam, periodKey)) * 100;
+async function predictLineupWinrate(myTeam, enemyTeam, periodKey = null, allowPrompt = true) {
+  const lineupLogit = await calculateLineupLogit(myTeam, enemyTeam, periodKey, allowPrompt);
+  return lineupLogit === null ? null : sigmoid(lineupLogit) * 100;
 }
 
 async function evaluateHeroContribution(heroName, heroPos, myTeam, enemyTeam) {
@@ -695,49 +711,185 @@ function syncTeamsFromSlots(showErrors = false) {
   enemyTeam = nextEnemyTeam;
   myPositions = myTeam.map(([, pos]) => pos);
   pickedHeroes = nextPicked;
-  sideIsBlue = document.getElementById('side-select').value === 'blue';
   userPosition = document.getElementById('pos-select').value;
   return true;
 }
 
 function getDefaultStatus() {
   if (!dataLoaded) return '英雄数据加载失败，请刷新页面重试。';
-  if (!myTeam.length && !enemyTeam.length) return '请直接在左右两侧选择英雄，无需按照选人顺序填写。';
+  if (!myTeam.length && !enemyTeam.length) {
+    return '请先选择“我的位置”，再从左右两侧选择英雄；每次选人后会自动更新当前胜率。';
+  }
   if (myTeam.length === 5 && enemyTeam.length === 5) {
     return userPosition
       ? '双方阵容已完整，可以开始最终胜率与强势期分析。'
       : '双方阵容已完整，请选择“我的位置”后开始分析。';
   }
   if (myTeam.length && enemyTeam.length) {
-    return `当前已选：我方 ${myTeam.length}/5，敌方 ${enemyTeam.length}/5。可继续调整或获取推荐。`;
+    return `当前已选：我方 ${myTeam.length}/5，敌方 ${enemyTeam.length}/5。当前胜率会自动更新。`;
   }
-  return `当前已选：我方 ${myTeam.length}/5，敌方 ${enemyTeam.length}/5。双方至少各选一名英雄后可获取推荐。`;
+  return `当前已选：我方 ${myTeam.length}/5，敌方 ${enemyTeam.length}/5。双方至少各选一名英雄后可计算胜率。`;
+}
+
+function getRecommendationTargetPosition() {
+  if (!userPosition || myPositions.includes(userPosition)) return null;
+  return userPosition;
+}
+
+function renderLiveWinrate() {
+  const valueEl = document.getElementById('live-winrate-value');
+  const noteEl = document.getElementById('live-winrate-note');
+  if (!valueEl || !noteEl) return;
+
+  valueEl.className = 'live-winrate-value';
+  if (liveWinrateState.busy) {
+    valueEl.textContent = '计算中';
+    valueEl.classList.add('is-busy');
+  } else {
+    valueEl.textContent = liveWinrateState.value === null ? '--' : `${liveWinrateState.value.toFixed(2)}%`;
+    if (liveWinrateState.tone === 'positive') valueEl.classList.add('is-positive');
+    if (liveWinrateState.tone === 'negative') valueEl.classList.add('is-negative');
+  }
+  noteEl.textContent = liveWinrateState.note;
+}
+
+function createLiveMatchupChip(detail) {
+  const chip = document.createElement('span');
+  chip.className = 'live-matchup-chip';
+  if (detail.value > 0.01) chip.classList.add('positive');
+  if (detail.value < -0.01) chip.classList.add('negative');
+
+  const target = document.createElement('strong');
+  target.textContent = detail.target;
+  const relation = document.createElement('span');
+  if (detail.type === 'counter') {
+    const label = detail.value > 0.01 ? '克制' : (detail.value < -0.01 ? '被克制' : '无克制');
+    relation.textContent = `${label} ${formatAdvantage(detail.value)}`;
+  } else {
+    const label = detail.value > 0.01 ? '协同' : '冲突';
+    relation.textContent = `${label} ${formatAdvantage(detail.value)}`;
+  }
+  chip.append(target, relation);
+  if (detail.isMatchup) {
+    const tag = document.createElement('em');
+    tag.textContent = '同分路';
+    chip.appendChild(tag);
+  }
+  return chip;
+}
+
+function createLiveMatchupGroup(title, details, emptyText) {
+  const group = document.createElement('div');
+  group.className = 'live-matchup-group';
+  const heading = document.createElement('span');
+  heading.className = 'live-matchup-group-title';
+  heading.textContent = title;
+  const items = document.createElement('div');
+  items.className = 'live-matchup-items';
+
+  if (!details.length) {
+    const empty = document.createElement('span');
+    empty.className = 'live-matchup-empty';
+    empty.textContent = emptyText;
+    items.appendChild(empty);
+  } else {
+    details.forEach(detail => items.appendChild(createLiveMatchupChip(detail)));
+  }
+  group.append(heading, items);
+  return group;
+}
+
+function renderLiveMatchups() {
+  const section = document.getElementById('live-matchups');
+  const list = document.getElementById('live-matchup-list');
+  const label = document.getElementById('live-hero-label');
+  if (!section || !list || !label) return;
+
+  const userHero = userPosition ? myTeam.find(([, pos]) => pos === userPosition) : null;
+  if (!dataLoaded || !userHero || !enemyTeam.length) {
+    section.hidden = true;
+    list.innerHTML = '';
+    return;
+  }
+
+  const [heroName, heroPos] = userHero;
+  const details = evaluateSingleHeroDetails(heroName, heroPos, myTeam, enemyTeam);
+  const counters = details.filter(detail => detail.type === 'counter');
+  const synergies = details.filter(detail => detail.type === 'synergy');
+  label.textContent = `${heroName} · ${heroPos}`;
+  list.innerHTML = '';
+  list.append(
+    createLiveMatchupGroup('对位敌方', counters, '暂无敌方对位数据'),
+    createLiveMatchupGroup('同队协同', synergies, '暂无显著协同')
+  );
+  section.hidden = false;
+}
+
+function setLiveWinrateState(value, note, tone = 'idle', busy = false) {
+  liveWinrateState = { value, note, tone, busy };
+  renderLiveWinrate();
+}
+
+async function updateCurrentWinrate() {
+  const requestId = ++liveWinrateRequestId;
+
+  if (!dataLoaded) {
+    setLiveWinrateState(null, '英雄数据尚未加载', 'idle');
+    return;
+  }
+  if (!myTeam.length || !enemyTeam.length) {
+    const note = !myTeam.length && !enemyTeam.length
+      ? '双方至少各选一名英雄后计算'
+      : `等待补齐${myTeam.length ? '敌方' : '我方'}阵容`;
+    setLiveWinrateState(null, note, 'idle');
+    return;
+  }
+
+  setLiveWinrateState(null, `正在计算当前 ${myTeam.length}v${enemyTeam.length} 阵容`, 'idle', true);
+  try {
+    const score = await predictLineupWinrate(myTeam, enemyTeam, null, false);
+    if (requestId !== liveWinrateRequestId) return;
+    if (score === null) {
+      setLiveWinrateState(null, '双方已选英雄中暂无可用分路胜率数据', 'idle');
+      return;
+    }
+    const tone = score > 50.5 ? 'positive' : (score < 49.5 ? 'negative' : 'idle');
+    setLiveWinrateState(
+      score,
+      `我方胜率 · 敌方 ${(100 - score).toFixed(2)}% · 按已选 ${myTeam.length}v${enemyTeam.length} 阵容计算`,
+      tone
+    );
+  } catch (error) {
+    if (requestId !== liveWinrateRequestId) return;
+    console.error(error);
+    setLiveWinrateState(null, '当前胜率计算失败，请调整阵容后重试', 'idle');
+  }
 }
 
 function refreshUI(statusMessage = null) {
   document.getElementById('my-count').textContent = `${myTeam.length} / 5`;
   document.getElementById('enemy-count').textContent = `${enemyTeam.length} / 5`;
   document.getElementById('status-text').textContent = statusMessage || getDefaultStatus();
+  renderLiveWinrate();
+  renderLiveMatchups();
 
   const recommendBtn = document.getElementById('recommend-btn');
   const analyzeBtn = document.getElementById('analyze-btn');
-  recommendBtn.disabled = !dataLoaded || isCalculating || !myTeam.length || !enemyTeam.length || myTeam.length >= 5;
+  const recommendationTarget = getRecommendationTargetPosition();
+  recommendBtn.disabled = !dataLoaded || isCalculating || !myTeam.length || !enemyTeam.length || !recommendationTarget;
+  recommendBtn.title = !userPosition
+    ? '请先选择“我的位置”'
+    : (myPositions.includes(userPosition) ? '指定位置已有英雄' : `推荐${userPosition}英雄`);
   analyzeBtn.disabled = !dataLoaded || isCalculating || myTeam.length !== 5 || enemyTeam.length !== 5 || !userPosition;
 }
 
 function handleDraftChange() {
+  draftRevision++;
   syncTeamsFromSlots(false);
   document.getElementById('rec-card').hidden = true;
   document.getElementById('rec-content').innerHTML = '';
-  refreshUI();
-}
-
-function updateSideLabels() {
-  const blue = document.getElementById('side-select').value === 'blue';
-  document.getElementById('my-side-label').textContent = blue ? '蓝方' : '红方';
-  document.getElementById('enemy-side-label').textContent = blue ? '红方' : '蓝方';
-  document.getElementById('my-panel').classList.toggle('red-side', !blue);
-  document.getElementById('enemy-panel').classList.toggle('blue-side', blue);
+  refreshUI('阵容已更新，正在重新计算当前胜率…');
+  void updateCurrentWinrate();
 }
 
 function resetSession() {
@@ -754,7 +906,9 @@ function resetSession() {
   document.getElementById('rec-card').hidden = true;
   document.getElementById('rec-content').innerHTML = '';
   document.getElementById('log-output').textContent = '';
-  log('🔄 已清空双方阵容，阵营和位置设置保持不变。');
+  draftRevision++;
+  log('🔄 已清空双方阵容，位置设置保持不变。');
+  setLiveWinrateState(null, '双方至少各选一名英雄后计算', 'idle');
   refreshUI('已清空阵容，可以重新自由选择双方英雄。');
 }
 
@@ -830,6 +984,15 @@ function displayRecommendations(finalResults, availablePositions) {
 // ================= 推荐与分析 =================
 async function showRecommendations() {
   if (isCalculating || !dataLoaded || !syncTeamsFromSlots(true)) return;
+  if (!userPosition) {
+    alert('请先在“位置 / 推荐分路”中选择要推荐的位置。');
+    return;
+  }
+  const targetPosition = getRecommendationTargetPosition();
+  if (!targetPosition) {
+    alert(`我方${userPosition}已经有英雄，请清空该位置或选择其他位置后再推荐。`);
+    return;
+  }
   if (!myTeam.length || !enemyTeam.length) {
     alert('双方至少各选一名英雄后才能获取推荐。');
     return;
@@ -837,45 +1000,47 @@ async function showRecommendations() {
 
   const recCard = document.getElementById('rec-card');
   const recContent = document.getElementById('rec-content');
+  const recSubtitle = document.getElementById('rec-subtitle');
   recCard.hidden = false;
+  recSubtitle.textContent = `仅计算${targetPosition}候选英雄`;
   recContent.textContent = '正在计算推荐...';
   isCalculating = true;
-  let resultStatus = '推荐已更新；阵容有任何变化后，可重新获取推荐。';
-  refreshUI('正在根据当前双方阵容计算推荐...');
+  const revision = draftRevision;
+  let resultStatus = `已更新${targetPosition}推荐；阵容变化后会自动清除。`;
+  refreshUI(`正在计算我方${targetPosition}的下一手推荐...`);
 
   try {
-    const availablePositions = POSITIONS.filter(pos => !myPositions.includes(pos));
-    if (!availablePositions.length) {
-      recContent.textContent = '我方五个位置已满，可以直接进行完整阵容分析。';
-      resultStatus = '我方五个位置已满，可以直接进行完整阵容分析。';
-      return;
-    }
-
-    const candidates = {};
-    const finalResults = {};
-    availablePositions.forEach(pos => {
-      candidates[pos] = [];
-      finalResults[pos] = [];
-    });
-
+    const availablePositions = [targetPosition];
+    const candidates = [];
+    const finalResults = { [targetPosition]: [] };
     for (const [heroName, heroId] of Object.entries(heroDict)) {
       if (pickedHeroes.has(heroName)) continue;
       const posData = posCache[heroId] || {};
-      for (const pos of availablePositions) {
-        if (posData[pos] >= 10) candidates[pos].push(heroName);
-      }
+      if (posData[targetPosition] >= 10) candidates.push(heroName);
     }
 
-    for (const pos of availablePositions) {
-      for (const name of candidates[pos]) {
-        const simTeam = myTeam.concat([[name, pos]]);
-        const score = await predictLineupWinrate(simTeam, enemyTeam, sideIsBlue);
-        finalResults[pos].push({ score, name });
+    for (const name of candidates) {
+      if (revision !== draftRevision) {
+        resultStatus = '阵容或推荐位置已变化，本次推荐已取消。';
+        return;
       }
+      const simTeam = myTeam.concat([[name, targetPosition]]);
+      const score = await predictLineupWinrate(simTeam, enemyTeam);
+      finalResults[targetPosition].push({ score, name });
+    }
+
+    if (revision !== draftRevision) {
+      resultStatus = '阵容或推荐位置已变化，本次推荐已取消。';
+      return;
+    }
+    if (!candidates.length) {
+      recContent.textContent = `${targetPosition}暂无可用候选英雄。`;
+      resultStatus = `${targetPosition}没有可推荐的英雄。`;
+      return;
     }
 
     displayRecommendations(finalResults, availablePositions);
-    resultStatus = '推荐已更新；可以直接填入推荐英雄，也可以继续手动调整阵容。';
+    resultStatus = `已按指定位置更新${targetPosition}推荐；可以直接填入我方。`;
   } catch (error) {
     console.error(error);
     recContent.textContent = `推荐计算出错：${error}`;
@@ -908,18 +1073,14 @@ async function runFinalAnalysis() {
 document.addEventListener('DOMContentLoaded', async () => {
   buildTeamSlots('mine', 'my-team-slots');
   buildTeamSlots('enemy', 'enemy-team-slots');
-  updateSideLabels();
   syncTeamsFromSlots(false);
   refreshUI('正在加载英雄数据...');
 
-  document.getElementById('side-select').addEventListener('change', () => {
-    sideIsBlue = document.getElementById('side-select').value === 'blue';
-    updateSideLabels();
-    document.getElementById('rec-card').hidden = true;
-    refreshUI();
-  });
   document.getElementById('pos-select').addEventListener('change', () => {
     userPosition = document.getElementById('pos-select').value;
+    draftRevision++;
+    document.getElementById('rec-card').hidden = true;
+    document.getElementById('rec-content').innerHTML = '';
     refreshUI();
   });
   document.getElementById('recommend-btn').addEventListener('click', showRecommendations);
@@ -932,17 +1093,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   dataLoaded = await loadData();
   setHeroControlsEnabled(dataLoaded);
   refreshUI(dataLoaded ? null : '英雄数据加载失败，请刷新页面重试。');
+  void updateCurrentWinrate();
 });
 
 async function showFinalAnalysis() {
   isCalculating = true;
   refreshUI('正在分析双方完整阵容...');
   try {
-    const finalWr4d = await predictLineupWinrate(myTeam, enemyTeam, sideIsBlue);
+    const finalWr4d = await predictLineupWinrate(myTeam, enemyTeam);
     const periodLabels = { early:'前期(0-12min)', mid:'中期(12-18min)', late:'后期(18min+)' };
     const periodResults = {};
     for (const key of Object.keys(periodLabels)) {
-      periodResults[key] = await predictLineupWinrate(myTeam, enemyTeam, sideIsBlue, key);
+      periodResults[key] = await predictLineupWinrate(myTeam, enemyTeam, key);
     }
 
     let analysis = '\n=== 最终胜率预测 ===\n';

@@ -16,14 +16,7 @@
     <div class="card" id="setup-card">
       <div class="setup-grid">
         <div class="form-row">
-          <label for="side-select">我方阵营</label>
-          <select id="side-select">
-            <option value="blue">蓝方</option>
-            <option value="red">红方</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label for="pos-select">我的位置</label>
+          <label for="pos-select">位置 / 推荐分路</label>
           <select id="pos-select">
             <option value="">请选择</option>
             <option>对抗路</option>
@@ -43,7 +36,6 @@
             <div class="team-title">
               <span class="team-dot"></span>
               <h2>我方阵容</h2>
-              <span class="side-label" id="my-side-label">蓝方</span>
             </div>
             <span class="team-count" id="my-count">0 / 5</span>
           </div>
@@ -55,7 +47,6 @@
             <div class="team-title">
               <span class="team-dot"></span>
               <h2>敌方阵容</h2>
-              <span class="side-label" id="enemy-side-label">红方</span>
             </div>
             <span class="team-count" id="enemy-count">0 / 5</span>
           </div>
@@ -65,7 +56,21 @@
 
       <div class="card action-card">
         <div class="status" id="status-text" aria-live="polite">正在加载英雄数据...</div>
-        <div class="hint">每个分路都可以展开下拉框选择，也可以直接输入英雄名；同一英雄不能被重复选择。</div>
+        <div class="live-winrate" id="live-winrate" aria-live="polite">
+          <div class="live-winrate-copy">
+            <span class="live-winrate-label">当前阵容胜率</span>
+            <small id="live-winrate-note">双方至少各选一名英雄后计算</small>
+          </div>
+          <strong class="live-winrate-value" id="live-winrate-value">--</strong>
+        </div>
+        <div class="live-matchups" id="live-matchups" hidden>
+          <div class="live-matchups-heading">
+            <span id="live-hero-label">我的分路英雄关系</span>
+            <small>克制与协同使用当前胜率模型的同一个指数</small>
+          </div>
+          <div class="live-matchup-list" id="live-matchup-list"></div>
+        </div>
+        <div class="hint">每个分路都可以展开下拉框选择，也可以直接输入英雄名；“推荐下一手”只计算你在上方指定的位置。</div>
         <div class="action-grid">
           <button id="recommend-btn" class="btn primary" type="button" disabled>推荐下一手</button>
           <button id="analyze-btn" class="btn success" type="button" disabled>分析完整阵容</button>
@@ -76,7 +81,7 @@
       <div class="card" id="rec-card" hidden>
         <div class="section-heading">
           <h3>推荐英雄</h3>
-          <span>按我方空缺分路展示</span>
+          <span id="rec-subtitle">按指定位置展示</span>
         </div>
         <div id="rec-content"></div>
       </div>
