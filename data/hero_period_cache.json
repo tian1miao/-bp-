@@ -1,2262 +1,2262 @@
 {
   "108": [
     {
-      "winRate": 50.54,
-      "intervalRate": 36.79,
+      "winRate": 50.34,
+      "intervalRate": 36.85,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.8,
-      "intervalRate": 52.49,
+      "winRate": 48.71,
+      "intervalRate": 52.36,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.55,
-      "intervalRate": 10.72,
+      "winRate": 50.41,
+      "intervalRate": 10.79,
       "durationRange": "18分钟+"
     }
   ],
   "107": [
     {
-      "winRate": 43.14,
-      "intervalRate": 36.56,
+      "winRate": 42.77,
+      "intervalRate": 37.02,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 47.75,
-      "intervalRate": 52.36,
+      "winRate": 47.9,
+      "intervalRate": 51.76,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.55,
-      "intervalRate": 11.08,
+      "winRate": 50.11,
+      "intervalRate": 11.21,
       "durationRange": "18分钟+"
     }
   ],
   "105": [
     {
-      "winRate": 44.25,
-      "intervalRate": 37.09,
+      "winRate": 44.09,
+      "intervalRate": 37.17,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 46.27,
-      "intervalRate": 51.04,
+      "winRate": 46.11,
+      "intervalRate": 50.99,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.5,
-      "intervalRate": 11.87,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "109": [
-    {
-      "winRate": 43.12,
-      "intervalRate": 40.26,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 47.04,
-      "intervalRate": 50.47,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 47.64,
-      "intervalRate": 9.28,
+      "winRate": 48.63,
+      "intervalRate": 11.84,
       "durationRange": "18分钟+"
     }
   ],
   "111": [
     {
-      "winRate": 54.95,
-      "intervalRate": 40.7,
+      "winRate": 55.11,
+      "intervalRate": 40.42,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 52.05,
-      "intervalRate": 49.35,
+      "winRate": 52.81,
+      "intervalRate": 49.7,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.73,
-      "intervalRate": 9.96,
+      "winRate": 51.31,
+      "intervalRate": 9.88,
       "durationRange": "18分钟+"
     }
   ],
   "112": [
     {
-      "winRate": 54.8,
-      "intervalRate": 37.35,
+      "winRate": 54.99,
+      "intervalRate": 37.42,
       "durationRange": "0-12分钟"
     },
     {
       "winRate": 50.94,
-      "intervalRate": 51.55,
+      "intervalRate": 51.5,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 52.45,
-      "intervalRate": 11.1,
+      "winRate": 52.23,
+      "intervalRate": 11.08,
       "durationRange": "18分钟+"
     }
   ],
-  "110": [
+  "109": [
     {
-      "winRate": 43.55,
-      "intervalRate": 38.51,
+      "winRate": 42.93,
+      "intervalRate": 40.49,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 47.63,
-      "intervalRate": 49.59,
+      "winRate": 47.14,
+      "intervalRate": 50.3,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 51.43,
-      "intervalRate": 11.9,
+      "winRate": 48.15,
+      "intervalRate": 9.21,
       "durationRange": "18分钟+"
     }
   ],
   "106": [
     {
-      "winRate": 49.09,
-      "intervalRate": 39.93,
+      "winRate": 49.12,
+      "intervalRate": 39.68,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 47.7,
-      "intervalRate": 50.16,
+      "winRate": 47.33,
+      "intervalRate": 50.25,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.9,
-      "intervalRate": 9.92,
+      "winRate": 48.23,
+      "intervalRate": 10.07,
       "durationRange": "18分钟+"
     }
   ],
-  "120": [
+  "110": [
     {
-      "winRate": 43.02,
-      "intervalRate": 38.55,
+      "winRate": 43.87,
+      "intervalRate": 38.5,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.54,
-      "intervalRate": 51.35,
+      "winRate": 47.58,
+      "intervalRate": 49.52,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.52,
-      "intervalRate": 10.1,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "113": [
-    {
-      "winRate": 46.45,
-      "intervalRate": 33.37,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 51.14,
-      "intervalRate": 52.31,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 51.81,
-      "intervalRate": 14.32,
+      "winRate": 51.42,
+      "intervalRate": 11.98,
       "durationRange": "18分钟+"
     }
   ],
   "117": [
     {
-      "winRate": 53.66,
-      "intervalRate": 39.24,
+      "winRate": 53.78,
+      "intervalRate": 39.37,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.93,
-      "intervalRate": 50.81,
+      "winRate": 49.62,
+      "intervalRate": 50.73,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 46.62,
-      "intervalRate": 9.95,
+      "winRate": 47.46,
+      "intervalRate": 9.91,
       "durationRange": "18分钟+"
     }
   ],
-  "119": [
+  "113": [
     {
-      "winRate": 45.82,
-      "intervalRate": 39.76,
+      "winRate": 46.53,
+      "intervalRate": 33.28,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 51.1,
-      "intervalRate": 50.69,
+      "winRate": 51.31,
+      "intervalRate": 52.42,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 51.4,
-      "intervalRate": 9.54,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "114": [
-    {
-      "winRate": 49.03,
-      "intervalRate": 41.26,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 47.29,
-      "intervalRate": 49.02,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 53.51,
-      "intervalRate": 9.71,
+      "winRate": 52.01,
+      "intervalRate": 14.29,
       "durationRange": "18分钟+"
     }
   ],
   "115": [
     {
-      "winRate": 51.36,
-      "intervalRate": 41.24,
+      "winRate": 51.27,
+      "intervalRate": 41.53,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.56,
-      "intervalRate": 49.81,
+      "winRate": 50.55,
+      "intervalRate": 49.74,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 52.99,
-      "intervalRate": 8.95,
+      "winRate": 52.74,
+      "intervalRate": 8.73,
       "durationRange": "18分钟+"
     }
   ],
-  "118": [
+  "119": [
     {
-      "winRate": 45.91,
-      "intervalRate": 37.1,
+      "winRate": 45.61,
+      "intervalRate": 39.57,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.8,
-      "intervalRate": 50.79,
+      "winRate": 50.94,
+      "intervalRate": 50.82,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.83,
-      "intervalRate": 12.11,
+      "winRate": 52.41,
+      "intervalRate": 9.61,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "114": [
+    {
+      "winRate": 48.92,
+      "intervalRate": 41.49,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 47.4,
+      "intervalRate": 48.8,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 53.63,
+      "intervalRate": 9.71,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "120": [
+    {
+      "winRate": 43.06,
+      "intervalRate": 38.56,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 48.65,
+      "intervalRate": 51.3,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 48.4,
+      "intervalRate": 10.14,
       "durationRange": "18分钟+"
     }
   ],
   "121": [
     {
-      "winRate": 56.11,
-      "intervalRate": 41.82,
+      "winRate": 55.63,
+      "intervalRate": 41.61,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 47.55,
-      "intervalRate": 48.62,
+      "winRate": 47.58,
+      "intervalRate": 48.86,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 45.72,
-      "intervalRate": 9.56,
+      "winRate": 46.13,
+      "intervalRate": 9.53,
       "durationRange": "18分钟+"
     }
   ],
-  "123": [
+  "118": [
     {
-      "winRate": 43.87,
-      "intervalRate": 36.46,
+      "winRate": 46.12,
+      "intervalRate": 37.15,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 47.3,
-      "intervalRate": 52.01,
+      "winRate": 50.69,
+      "intervalRate": 50.81,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 45.81,
-      "intervalRate": 11.52,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "126": [
-    {
-      "winRate": 55.21,
-      "intervalRate": 39.65,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 51.57,
-      "intervalRate": 50.14,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 45.67,
-      "intervalRate": 10.21,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "125": [
-    {
-      "winRate": 53.01,
-      "intervalRate": 35.12,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 50.58,
-      "intervalRate": 52.01,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 55.32,
-      "intervalRate": 12.87,
+      "winRate": 49.8,
+      "intervalRate": 12.03,
       "durationRange": "18分钟+"
     }
   ],
   "116": [
     {
-      "winRate": 45.69,
-      "intervalRate": 40.7,
+      "winRate": 45.51,
+      "intervalRate": 40.67,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 52.62,
-      "intervalRate": 49.27,
+      "winRate": 52.87,
+      "intervalRate": 49.37,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.73,
-      "intervalRate": 10.04,
+      "winRate": 51.06,
+      "intervalRate": 9.96,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "123": [
+    {
+      "winRate": 43.79,
+      "intervalRate": 36.64,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 47.28,
+      "intervalRate": 51.83,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 44.87,
+      "intervalRate": 11.53,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "125": [
+    {
+      "winRate": 52.55,
+      "intervalRate": 35.04,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 51.38,
+      "intervalRate": 51.84,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 55.19,
+      "intervalRate": 13.12,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "126": [
+    {
+      "winRate": 54.74,
+      "intervalRate": 39.74,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 51.2,
+      "intervalRate": 50.09,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 45.53,
+      "intervalRate": 10.17,
       "durationRange": "18分钟+"
     }
   ],
   "128": [
     {
-      "winRate": 50.36,
-      "intervalRate": 40.12,
+      "winRate": 49.85,
+      "intervalRate": 40.03,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.44,
-      "intervalRate": 50.47,
+      "winRate": 49.62,
+      "intervalRate": 50.59,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.9,
-      "intervalRate": 9.41,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "127": [
-    {
-      "winRate": 43.3,
-      "intervalRate": 35.22,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 49.6,
-      "intervalRate": 51.77,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 52.06,
-      "intervalRate": 13.01,
+      "winRate": 51.34,
+      "intervalRate": 9.38,
       "durationRange": "18分钟+"
     }
   ],
   "124": [
     {
-      "winRate": 56.8,
-      "intervalRate": 37.39,
+      "winRate": 57.01,
+      "intervalRate": 37.44,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.72,
-      "intervalRate": 51.58,
+      "winRate": 49.79,
+      "intervalRate": 51.59,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.93,
-      "intervalRate": 11.04,
+      "winRate": 48.56,
+      "intervalRate": 10.97,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "127": [
+    {
+      "winRate": 43.75,
+      "intervalRate": 34.94,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 49.46,
+      "intervalRate": 51.97,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 51.52,
+      "intervalRate": 13.09,
       "durationRange": "18分钟+"
     }
   ],
   "132": [
     {
-      "winRate": 48.73,
-      "intervalRate": 36.42,
+      "winRate": 48.51,
+      "intervalRate": 36.54,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.64,
-      "intervalRate": 51.67,
+      "winRate": 50.41,
+      "intervalRate": 51.71,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.5,
-      "intervalRate": 11.9,
+      "winRate": 47.83,
+      "intervalRate": 11.75,
       "durationRange": "18分钟+"
     }
   ],
   "134": [
     {
-      "winRate": 51.23,
-      "intervalRate": 37.89,
+      "winRate": 50.49,
+      "intervalRate": 37.78,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.19,
-      "intervalRate": 51.5,
+      "winRate": 49.24,
+      "intervalRate": 51.59,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.66,
-      "intervalRate": 10.61,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "136": [
-    {
-      "winRate": 54.76,
-      "intervalRate": 37.7,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 49.75,
-      "intervalRate": 51.2,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 43.87,
-      "intervalRate": 11.11,
+      "winRate": 49.54,
+      "intervalRate": 10.62,
       "durationRange": "18分钟+"
     }
   ],
   "131": [
     {
-      "winRate": 49.16,
-      "intervalRate": 34.69,
+      "winRate": 49.01,
+      "intervalRate": 34.31,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.62,
-      "intervalRate": 52.86,
+      "winRate": 50.98,
+      "intervalRate": 53.25,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.78,
-      "intervalRate": 12.45,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "135": [
-    {
-      "winRate": 48.55,
-      "intervalRate": 37.68,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 50.6,
-      "intervalRate": 51.55,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 50.45,
-      "intervalRate": 10.77,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "130": [
-    {
-      "winRate": 41.55,
-      "intervalRate": 37.12,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 49.04,
-      "intervalRate": 51.72,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 53.34,
-      "intervalRate": 11.16,
+      "winRate": 50.72,
+      "intervalRate": 12.44,
       "durationRange": "18分钟+"
     }
   ],
   "133": [
     {
-      "winRate": 50.48,
-      "intervalRate": 41.36,
+      "winRate": 51.03,
+      "intervalRate": 41.6,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.05,
-      "intervalRate": 48.9,
+      "winRate": 47.97,
+      "intervalRate": 48.84,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 45.38,
-      "intervalRate": 9.74,
+      "winRate": 44.53,
+      "intervalRate": 9.56,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "135": [
+    {
+      "winRate": 48.59,
+      "intervalRate": 37.83,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 51.05,
+      "intervalRate": 51.24,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 49.93,
+      "intervalRate": 10.93,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "136": [
+    {
+      "winRate": 54.39,
+      "intervalRate": 38.1,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 49.74,
+      "intervalRate": 50.84,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 44.57,
+      "intervalRate": 11.06,
       "durationRange": "18分钟+"
     }
   ],
   "129": [
     {
-      "winRate": 50.27,
-      "intervalRate": 40.73,
+      "winRate": 50.07,
+      "intervalRate": 41.18,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 53.99,
-      "intervalRate": 48.93,
+      "winRate": 53.57,
+      "intervalRate": 48.66,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.43,
-      "intervalRate": 10.34,
+      "winRate": 50.84,
+      "intervalRate": 10.16,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "130": [
+    {
+      "winRate": 41.79,
+      "intervalRate": 36.98,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 48.96,
+      "intervalRate": 51.87,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 51.85,
+      "intervalRate": 11.15,
       "durationRange": "18分钟+"
     }
   ],
   "138": [
     {
-      "winRate": 43.36,
-      "intervalRate": 38.08,
+      "winRate": 42.81,
+      "intervalRate": 38.28,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.8,
-      "intervalRate": 51.89,
+      "winRate": 49.32,
+      "intervalRate": 51.84,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.68,
-      "intervalRate": 10.04,
+      "winRate": 50.29,
+      "intervalRate": 9.88,
       "durationRange": "18分钟+"
     }
   ],
   "139": [
     {
-      "winRate": 45.81,
-      "intervalRate": 40.43,
+      "winRate": 45.46,
+      "intervalRate": 40.87,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 52.42,
-      "intervalRate": 50.36,
+      "winRate": 52.62,
+      "intervalRate": 50.04,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 57.39,
-      "intervalRate": 9.21,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "141": [
-    {
-      "winRate": 48.42,
-      "intervalRate": 40.24,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 52.81,
-      "intervalRate": 50.65,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 56.28,
-      "intervalRate": 9.11,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "140": [
-    {
-      "winRate": 55.53,
-      "intervalRate": 37.32,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 50.67,
-      "intervalRate": 51.29,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 49.25,
-      "intervalRate": 11.39,
+      "winRate": 58.11,
+      "intervalRate": 9.1,
       "durationRange": "18分钟+"
     }
   ],
   "137": [
     {
-      "winRate": 48.31,
-      "intervalRate": 35.78,
+      "winRate": 49.21,
+      "intervalRate": 35.71,
       "durationRange": "0-12分钟"
     },
     {
       "winRate": 50.18,
-      "intervalRate": 53.37,
+      "intervalRate": 53.51,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 53.59,
-      "intervalRate": 10.85,
+      "winRate": 53.35,
+      "intervalRate": 10.78,
       "durationRange": "18分钟+"
     }
   ],
-  "144": [
+  "141": [
     {
-      "winRate": 44.8,
-      "intervalRate": 41.17,
+      "winRate": 48.44,
+      "intervalRate": 40.1,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 46.82,
-      "intervalRate": 49.08,
+      "winRate": 53.05,
+      "intervalRate": 50.81,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.25,
-      "intervalRate": 9.75,
+      "winRate": 55.75,
+      "intervalRate": 9.09,
       "durationRange": "18分钟+"
     }
   ],
-  "142": [
+  "140": [
     {
-      "winRate": 46.2,
-      "intervalRate": 37.84,
+      "winRate": 56.22,
+      "intervalRate": 37.8,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.02,
-      "intervalRate": 51.4,
+      "winRate": 50.1,
+      "intervalRate": 51.04,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 47.17,
-      "intervalRate": 10.76,
+      "winRate": 48.11,
+      "intervalRate": 11.16,
       "durationRange": "18分钟+"
     }
   ],
   "146": [
     {
-      "winRate": 55.19,
-      "intervalRate": 37.7,
+      "winRate": 55.33,
+      "intervalRate": 38.08,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 52.63,
-      "intervalRate": 51.26,
+      "winRate": 52.16,
+      "intervalRate": 51,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 52.42,
-      "intervalRate": 11.04,
+      "winRate": 52.82,
+      "intervalRate": 10.91,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "142": [
+    {
+      "winRate": 46.38,
+      "intervalRate": 37.99,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 48.01,
+      "intervalRate": 51.31,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 46.97,
+      "intervalRate": 10.7,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "144": [
+    {
+      "winRate": 44.63,
+      "intervalRate": 41.18,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 46.74,
+      "intervalRate": 49.11,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 48.12,
+      "intervalRate": 9.71,
       "durationRange": "18分钟+"
     }
   ],
   "148": [
     {
-      "winRate": 40.08,
-      "intervalRate": 39.12,
+      "winRate": 40.02,
+      "intervalRate": 39.03,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 44.46,
-      "intervalRate": 49.79,
+      "winRate": 44.66,
+      "intervalRate": 49.85,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 51.39,
-      "intervalRate": 11.09,
+      "winRate": 51.17,
+      "intervalRate": 11.12,
       "durationRange": "18分钟+"
     }
   ],
   "149": [
     {
-      "winRate": 49.26,
-      "intervalRate": 38.78,
+      "winRate": 49.38,
+      "intervalRate": 39.05,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 51.62,
-      "intervalRate": 50.6,
+      "winRate": 51.86,
+      "intervalRate": 50.43,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 51.76,
-      "intervalRate": 10.62,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "152": [
-    {
-      "winRate": 46.7,
-      "intervalRate": 38.46,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 46.81,
-      "intervalRate": 50.89,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 45.66,
-      "intervalRate": 10.65,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "154": [
-    {
-      "winRate": 53.48,
-      "intervalRate": 35.31,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 50.82,
-      "intervalRate": 52.68,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 49.76,
-      "intervalRate": 12.01,
+      "winRate": 51.46,
+      "intervalRate": 10.52,
       "durationRange": "18分钟+"
     }
   ],
   "151": [
     {
-      "winRate": 44.74,
-      "intervalRate": 37.19,
+      "winRate": 44.85,
+      "intervalRate": 37.28,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.15,
-      "intervalRate": 51.79,
+      "winRate": 50.03,
+      "intervalRate": 51.68,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.85,
-      "intervalRate": 11.02,
+      "winRate": 51.14,
+      "intervalRate": 11.04,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "152": [
+    {
+      "winRate": 46.56,
+      "intervalRate": 38.45,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 46.83,
+      "intervalRate": 50.89,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 45.93,
+      "intervalRate": 10.66,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "154": [
+    {
+      "winRate": 53.27,
+      "intervalRate": 35.19,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 51.32,
+      "intervalRate": 52.7,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 49.26,
+      "intervalRate": 12.11,
       "durationRange": "18分钟+"
     }
   ],
   "153": [
     {
-      "winRate": 46.93,
-      "intervalRate": 32.83,
+      "winRate": 46.89,
+      "intervalRate": 32.84,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.67,
-      "intervalRate": 53.5,
+      "winRate": 49.69,
+      "intervalRate": 53.41,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 53.56,
-      "intervalRate": 13.67,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "150": [
-    {
-      "winRate": 50.79,
-      "intervalRate": 40.42,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 49.61,
-      "intervalRate": 49.44,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 54.28,
-      "intervalRate": 10.14,
+      "winRate": 53.6,
+      "intervalRate": 13.75,
       "durationRange": "18分钟+"
     }
   ],
   "156": [
     {
-      "winRate": 52.97,
-      "intervalRate": 38.07,
+      "winRate": 52.95,
+      "intervalRate": 38.31,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 51.12,
-      "intervalRate": 51.82,
+      "winRate": 51.27,
+      "intervalRate": 51.7,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.76,
-      "intervalRate": 10.11,
+      "winRate": 48.94,
+      "intervalRate": 9.99,
       "durationRange": "18分钟+"
     }
   ],
-  "157": [
+  "150": [
     {
-      "winRate": 54.85,
-      "intervalRate": 41.88,
+      "winRate": 51.28,
+      "intervalRate": 40.51,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.2,
-      "intervalRate": 48.76,
+      "winRate": 49.89,
+      "intervalRate": 49.66,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 46.36,
-      "intervalRate": 9.36,
+      "winRate": 53.38,
+      "intervalRate": 9.83,
       "durationRange": "18分钟+"
     }
   ],
   "155": [
     {
-      "winRate": 49.3,
-      "intervalRate": 39.57,
+      "winRate": 49.75,
+      "intervalRate": 40.06,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.01,
-      "intervalRate": 50.39,
+      "winRate": 48.97,
+      "intervalRate": 50.17,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 44.67,
-      "intervalRate": 10.04,
+      "winRate": 45.27,
+      "intervalRate": 9.76,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "157": [
+    {
+      "winRate": 54.59,
+      "intervalRate": 41.62,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 48.16,
+      "intervalRate": 49.02,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 48.01,
+      "intervalRate": 9.36,
       "durationRange": "18分钟+"
     }
   ],
   "166": [
     {
-      "winRate": 50.28,
-      "intervalRate": 38.54,
+      "winRate": 50.19,
+      "intervalRate": 38.64,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 53.51,
-      "intervalRate": 51.61,
+      "winRate": 53.16,
+      "intervalRate": 51.55,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 51.6,
-      "intervalRate": 9.85,
+      "winRate": 52.19,
+      "intervalRate": 9.8,
       "durationRange": "18分钟+"
     }
   ],
   "163": [
     {
-      "winRate": 52.38,
-      "intervalRate": 39.67,
+      "winRate": 52.55,
+      "intervalRate": 39.71,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.51,
-      "intervalRate": 49.97,
+      "winRate": 50.34,
+      "intervalRate": 50.11,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 46.59,
-      "intervalRate": 10.35,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "159": [
-    {
-      "winRate": 46.81,
-      "intervalRate": 41.78,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 47.26,
-      "intervalRate": 48.09,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 48.52,
-      "intervalRate": 10.13,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "162": [
-    {
-      "winRate": 47.67,
-      "intervalRate": 36.3,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 48.75,
-      "intervalRate": 52.04,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 49.1,
-      "intervalRate": 11.66,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "167": [
-    {
-      "winRate": 48.86,
-      "intervalRate": 37.96,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 49.55,
-      "intervalRate": 51.75,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 51.5,
-      "intervalRate": 10.3,
+      "winRate": 46.37,
+      "intervalRate": 10.18,
       "durationRange": "18分钟+"
     }
   ],
   "169": [
     {
-      "winRate": 48.91,
-      "intervalRate": 41.96,
+      "winRate": 48.62,
+      "intervalRate": 42.24,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.66,
-      "intervalRate": 49.19,
+      "winRate": 50.03,
+      "intervalRate": 49.02,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 51.28,
-      "intervalRate": 8.85,
+      "winRate": 52,
+      "intervalRate": 8.73,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "159": [
+    {
+      "winRate": 46.77,
+      "intervalRate": 41.75,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 46.86,
+      "intervalRate": 48.1,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 48.16,
+      "intervalRate": 10.15,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "162": [
+    {
+      "winRate": 47.91,
+      "intervalRate": 36.1,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 48.59,
+      "intervalRate": 52.21,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 49.45,
+      "intervalRate": 11.69,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "167": [
+    {
+      "winRate": 48.2,
+      "intervalRate": 38.26,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 49.06,
+      "intervalRate": 51.5,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 51.11,
+      "intervalRate": 10.25,
       "durationRange": "18分钟+"
     }
   ],
   "168": [
     {
-      "winRate": 48.83,
-      "intervalRate": 34.37,
+      "winRate": 48.66,
+      "intervalRate": 34.4,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.54,
-      "intervalRate": 52.51,
+      "winRate": 50.17,
+      "intervalRate": 52.49,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.49,
-      "intervalRate": 13.12,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "170": [
-    {
-      "winRate": 49.23,
-      "intervalRate": 38.92,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 49.79,
-      "intervalRate": 50.32,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 48.76,
-      "intervalRate": 10.76,
+      "winRate": 49.54,
+      "intervalRate": 13.11,
       "durationRange": "18分钟+"
     }
   ],
   "172": [
     {
-      "winRate": 48.77,
-      "intervalRate": 40.7,
+      "winRate": 49.61,
+      "intervalRate": 40.55,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.35,
-      "intervalRate": 49.5,
+      "winRate": 51.16,
+      "intervalRate": 49.89,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 53.43,
-      "intervalRate": 9.8,
+      "winRate": 51.4,
+      "intervalRate": 9.56,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "170": [
+    {
+      "winRate": 49.24,
+      "intervalRate": 38.94,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 49.76,
+      "intervalRate": 50.39,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 48.94,
+      "intervalRate": 10.67,
       "durationRange": "18分钟+"
     }
   ],
   "176": [
     {
-      "winRate": 48.6,
-      "intervalRate": 42.86,
+      "winRate": 49.46,
+      "intervalRate": 43.49,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.39,
-      "intervalRate": 48.9,
+      "winRate": 50.53,
+      "intervalRate": 48.29,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.69,
-      "intervalRate": 8.24,
+      "winRate": 50.89,
+      "intervalRate": 8.22,
       "durationRange": "18分钟+"
     }
   ],
   "173": [
     {
-      "winRate": 53.98,
-      "intervalRate": 36.88,
+      "winRate": 54.22,
+      "intervalRate": 37.01,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.43,
-      "intervalRate": 51.85,
+      "winRate": 48.62,
+      "intervalRate": 51.75,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.06,
-      "intervalRate": 11.27,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "177": [
-    {
-      "winRate": 49.39,
-      "intervalRate": 40.32,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 51.4,
-      "intervalRate": 50.18,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 53.71,
-      "intervalRate": 9.49,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "171": [
-    {
-      "winRate": 46.01,
-      "intervalRate": 38.45,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 48.29,
-      "intervalRate": 50.43,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 51.02,
-      "intervalRate": 11.12,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "180": [
-    {
-      "winRate": 44.23,
-      "intervalRate": 34.34,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 51.55,
-      "intervalRate": 53.56,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 52.98,
-      "intervalRate": 12.11,
+      "winRate": 49.93,
+      "intervalRate": 11.24,
       "durationRange": "18分钟+"
     }
   ],
   "174": [
     {
-      "winRate": 48.3,
-      "intervalRate": 38.98,
+      "winRate": 48.78,
+      "intervalRate": 39.4,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 47.84,
-      "intervalRate": 50.69,
+      "winRate": 48.05,
+      "intervalRate": 50.01,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.08,
-      "intervalRate": 10.33,
+      "winRate": 50.54,
+      "intervalRate": 10.59,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "180": [
+    {
+      "winRate": 43.64,
+      "intervalRate": 34.05,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 52.42,
+      "intervalRate": 53.34,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 53.76,
+      "intervalRate": 12.61,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "171": [
+    {
+      "winRate": 45.06,
+      "intervalRate": 38.64,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 48.06,
+      "intervalRate": 49.99,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 51.53,
+      "intervalRate": 11.38,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "177": [
+    {
+      "winRate": 48.51,
+      "intervalRate": 40.5,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 51.74,
+      "intervalRate": 50,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 53.63,
+      "intervalRate": 9.49,
       "durationRange": "18分钟+"
     }
   ],
   "178": [
     {
-      "winRate": 48.08,
-      "intervalRate": 35.33,
+      "winRate": 48,
+      "intervalRate": 35.64,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.45,
-      "intervalRate": 52.69,
+      "winRate": 49.27,
+      "intervalRate": 52.49,
       "durationRange": "12-18分钟"
     },
     {
       "winRate": 46.62,
-      "intervalRate": 11.98,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "179": [
-    {
-      "winRate": 48.02,
-      "intervalRate": 33.63,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 50.66,
-      "intervalRate": 52.67,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 52.93,
-      "intervalRate": 13.69,
+      "intervalRate": 11.86,
       "durationRange": "18分钟+"
     }
   ],
   "175": [
     {
-      "winRate": 45.31,
-      "intervalRate": 36.37,
+      "winRate": 45.57,
+      "intervalRate": 36.53,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 46.45,
-      "intervalRate": 52.47,
+      "winRate": 46.32,
+      "intervalRate": 52.31,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 46.91,
+      "winRate": 46.99,
       "intervalRate": 11.17,
       "durationRange": "18分钟+"
     }
   ],
-  "187": [
+  "179": [
     {
-      "winRate": 49.41,
-      "intervalRate": 33.54,
+      "winRate": 47.21,
+      "intervalRate": 33.32,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.69,
-      "intervalRate": 53.77,
+      "winRate": 50.86,
+      "intervalRate": 52.26,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.27,
-      "intervalRate": 12.68,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "190": [
-    {
-      "winRate": 54.22,
-      "intervalRate": 40.1,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 50.9,
-      "intervalRate": 50.22,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 51.34,
-      "intervalRate": 9.68,
+      "winRate": 53.63,
+      "intervalRate": 14.42,
       "durationRange": "18分钟+"
     }
   ],
   "183": [
     {
-      "winRate": 50.39,
-      "intervalRate": 33.65,
+      "winRate": 50.83,
+      "intervalRate": 34.01,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 52.46,
-      "intervalRate": 53.26,
+      "winRate": 52.56,
+      "intervalRate": 52.97,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 52.54,
-      "intervalRate": 13.09,
+      "winRate": 53.3,
+      "intervalRate": 13.02,
       "durationRange": "18分钟+"
     }
   ],
-  "186": [
+  "190": [
     {
-      "winRate": 53.51,
-      "intervalRate": 38.26,
+      "winRate": 53.25,
+      "intervalRate": 40.31,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 53.97,
-      "intervalRate": 51.33,
+      "winRate": 51.05,
+      "intervalRate": 50,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.62,
-      "intervalRate": 10.41,
+      "winRate": 54.26,
+      "intervalRate": 9.7,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "187": [
+    {
+      "winRate": 49.49,
+      "intervalRate": 33.55,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 48.51,
+      "intervalRate": 53.74,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 48.31,
+      "intervalRate": 12.71,
       "durationRange": "18分钟+"
     }
   ],
   "182": [
     {
-      "winRate": 47.77,
-      "intervalRate": 34.85,
+      "winRate": 47.46,
+      "intervalRate": 34.94,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 47.13,
-      "intervalRate": 52.57,
+      "winRate": 47.5,
+      "intervalRate": 52.44,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.97,
-      "intervalRate": 12.58,
+      "winRate": 49.84,
+      "intervalRate": 12.62,
       "durationRange": "18分钟+"
     }
   ],
-  "191": [
+  "186": [
     {
-      "winRate": 56.64,
-      "intervalRate": 35.43,
+      "winRate": 53.88,
+      "intervalRate": 38.24,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.4,
-      "intervalRate": 52.29,
+      "winRate": 53.9,
+      "intervalRate": 51.41,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 53.1,
-      "intervalRate": 12.28,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "189": [
-    {
-      "winRate": 50.62,
-      "intervalRate": 36.09,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 54.15,
-      "intervalRate": 52.27,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 53.03,
-      "intervalRate": 11.64,
+      "winRate": 50.43,
+      "intervalRate": 10.35,
       "durationRange": "18分钟+"
     }
   ],
   "184": [
     {
-      "winRate": 47.66,
-      "intervalRate": 44.34,
+      "winRate": 47.61,
+      "intervalRate": 44.4,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 46.17,
-      "intervalRate": 47.77,
+      "winRate": 46.27,
+      "intervalRate": 47.65,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 46.1,
-      "intervalRate": 7.9,
+      "winRate": 46.53,
+      "intervalRate": 7.95,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "189": [
+    {
+      "winRate": 50.56,
+      "intervalRate": 36.15,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 54,
+      "intervalRate": 52.35,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 53.28,
+      "intervalRate": 11.51,
       "durationRange": "18分钟+"
     }
   ],
   "188": [
     {
-      "winRate": 51.11,
-      "intervalRate": 38.77,
+      "winRate": 50.09,
+      "intervalRate": 38.57,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.1,
-      "intervalRate": 50.51,
+      "winRate": 49.22,
+      "intervalRate": 50.66,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.83,
-      "intervalRate": 10.71,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "199": [
-    {
-      "winRate": 48.35,
-      "intervalRate": 38.64,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 50.41,
-      "intervalRate": 50.86,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 50.35,
-      "intervalRate": 10.5,
+      "winRate": 48.12,
+      "intervalRate": 10.77,
       "durationRange": "18分钟+"
     }
   ],
   "192": [
     {
-      "winRate": 49.61,
-      "intervalRate": 39.94,
+      "winRate": 49.48,
+      "intervalRate": 39.63,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 52.73,
-      "intervalRate": 50.04,
+      "winRate": 52.61,
+      "intervalRate": 50.32,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 56.96,
-      "intervalRate": 10.02,
+      "winRate": 55.48,
+      "intervalRate": 10.05,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "191": [
+    {
+      "winRate": 56.67,
+      "intervalRate": 35.56,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 50.99,
+      "intervalRate": 52.21,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 51.56,
+      "intervalRate": 12.24,
       "durationRange": "18分钟+"
     }
   ],
   "194": [
     {
-      "winRate": 53.73,
-      "intervalRate": 39.11,
+      "winRate": 54.34,
+      "intervalRate": 39.33,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.73,
-      "intervalRate": 50.56,
+      "winRate": 48.76,
+      "intervalRate": 50.17,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.49,
-      "intervalRate": 10.32,
+      "winRate": 49.73,
+      "intervalRate": 10.5,
       "durationRange": "18分钟+"
     }
   ],
-  "195": [
+  "199": [
     {
-      "winRate": 53.36,
-      "intervalRate": 43.38,
+      "winRate": 48.65,
+      "intervalRate": 38.21,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.92,
-      "intervalRate": 48.23,
+      "winRate": 49.85,
+      "intervalRate": 51.32,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.6,
-      "intervalRate": 8.39,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "197": [
-    {
-      "winRate": 45.4,
-      "intervalRate": 38.9,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 49.44,
-      "intervalRate": 50.5,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 48.32,
-      "intervalRate": 10.61,
+      "winRate": 50.97,
+      "intervalRate": 10.47,
       "durationRange": "18分钟+"
     }
   ],
   "193": [
     {
-      "winRate": 47.21,
-      "intervalRate": 36.53,
+      "winRate": 47.04,
+      "intervalRate": 36.3,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 52.01,
-      "intervalRate": 51.99,
+      "winRate": 51.66,
+      "intervalRate": 52.33,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.09,
-      "intervalRate": 11.48,
+      "winRate": 48.15,
+      "intervalRate": 11.37,
       "durationRange": "18分钟+"
     }
   ],
-  "198": [
+  "195": [
     {
-      "winRate": 49.35,
-      "intervalRate": 40.58,
+      "winRate": 53.51,
+      "intervalRate": 43.18,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 53.48,
-      "intervalRate": 50.17,
+      "winRate": 50.31,
+      "intervalRate": 48.48,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.31,
-      "intervalRate": 9.25,
+      "winRate": 48.54,
+      "intervalRate": 8.34,
       "durationRange": "18分钟+"
     }
   ],
   "196": [
     {
-      "winRate": 42.64,
-      "intervalRate": 36.63,
+      "winRate": 42.32,
+      "intervalRate": 37.32,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 51.53,
-      "intervalRate": 52.06,
+      "winRate": 51.44,
+      "intervalRate": 51.12,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 53.58,
-      "intervalRate": 11.32,
+      "winRate": 54.67,
+      "intervalRate": 11.55,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "197": [
+    {
+      "winRate": 45.51,
+      "intervalRate": 38.93,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 49.69,
+      "intervalRate": 50.46,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 48.51,
+      "intervalRate": 10.61,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "198": [
+    {
+      "winRate": 48.89,
+      "intervalRate": 40.44,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 53.26,
+      "intervalRate": 50.31,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 50.13,
+      "intervalRate": 9.25,
       "durationRange": "18分钟+"
     }
   ],
   "312": [
     {
-      "winRate": 45.77,
-      "intervalRate": 35.94,
+      "winRate": 46.07,
+      "intervalRate": 35.98,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.88,
-      "intervalRate": 51.96,
+      "winRate": 48.51,
+      "intervalRate": 52.14,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.34,
-      "intervalRate": 12.1,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "507": [
-    {
-      "winRate": 59.19,
-      "intervalRate": 35.25,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 47.13,
-      "intervalRate": 52.02,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 46.69,
-      "intervalRate": 12.73,
+      "winRate": 51.16,
+      "intervalRate": 11.89,
       "durationRange": "18分钟+"
     }
   ],
   "502": [
     {
-      "winRate": 51.19,
-      "intervalRate": 40.58,
+      "winRate": 52.23,
+      "intervalRate": 40.86,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.34,
-      "intervalRate": 49.88,
+      "winRate": 47.99,
+      "intervalRate": 49.52,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.38,
-      "intervalRate": 9.54,
+      "winRate": 46.59,
+      "intervalRate": 9.62,
       "durationRange": "18分钟+"
     }
   ],
   "503": [
     {
-      "winRate": 47.4,
-      "intervalRate": 41.86,
+      "winRate": 47.68,
+      "intervalRate": 41.56,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.17,
-      "intervalRate": 48.64,
+      "winRate": 48.48,
+      "intervalRate": 48.72,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.32,
-      "intervalRate": 9.5,
+      "winRate": 48.58,
+      "intervalRate": 9.71,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "507": [
+    {
+      "winRate": 59.15,
+      "intervalRate": 34.56,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 47.1,
+      "intervalRate": 52.88,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 46.87,
+      "intervalRate": 12.56,
       "durationRange": "18分钟+"
     }
   ],
   "501": [
     {
-      "winRate": 38.48,
-      "intervalRate": 41.91,
+      "winRate": 38.43,
+      "intervalRate": 41.94,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 46.64,
-      "intervalRate": 48.2,
+      "winRate": 46.73,
+      "intervalRate": 48.21,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 46.93,
-      "intervalRate": 9.9,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "506": [
-    {
-      "winRate": 50.89,
-      "intervalRate": 38.52,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 52.9,
-      "intervalRate": 51.81,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 53.02,
-      "intervalRate": 9.67,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "511": [
-    {
-      "winRate": 51.36,
-      "intervalRate": 39.29,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 47.8,
-      "intervalRate": 50.75,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 43.65,
-      "intervalRate": 9.96,
+      "winRate": 46.95,
+      "intervalRate": 9.85,
       "durationRange": "18分钟+"
     }
   ],
   "510": [
     {
-      "winRate": 54.99,
-      "intervalRate": 38.35,
+      "winRate": 54.63,
+      "intervalRate": 38.55,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.88,
-      "intervalRate": 51.52,
+      "winRate": 50.3,
+      "intervalRate": 51.41,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.56,
-      "intervalRate": 10.13,
+      "winRate": 50.52,
+      "intervalRate": 10.05,
       "durationRange": "18分钟+"
     }
   ],
   "504": [
     {
-      "winRate": 49.87,
-      "intervalRate": 42.91,
+      "winRate": 49.99,
+      "intervalRate": 42.97,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 44.91,
-      "intervalRate": 47.88,
+      "winRate": 44.95,
+      "intervalRate": 47.78,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 40.49,
-      "intervalRate": 9.21,
+      "winRate": 40.58,
+      "intervalRate": 9.25,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "506": [
+    {
+      "winRate": 51.08,
+      "intervalRate": 38.47,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 52.99,
+      "intervalRate": 51.85,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 52.43,
+      "intervalRate": 9.68,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "511": [
+    {
+      "winRate": 51.64,
+      "intervalRate": 39.15,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 47.85,
+      "intervalRate": 50.99,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 43.88,
+      "intervalRate": 9.87,
       "durationRange": "18分钟+"
     }
   ],
   "505": [
     {
-      "winRate": 43.93,
-      "intervalRate": 40.16,
+      "winRate": 44.18,
+      "intervalRate": 40.32,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.87,
-      "intervalRate": 49.77,
+      "winRate": 49.82,
+      "intervalRate": 49.57,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 46.38,
-      "intervalRate": 10.07,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "517": [
-    {
-      "winRate": 51.72,
-      "intervalRate": 38.26,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 51.3,
-      "intervalRate": 51.01,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 50.08,
-      "intervalRate": 10.74,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "513": [
-    {
-      "winRate": 54.23,
-      "intervalRate": 42.63,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 51.88,
-      "intervalRate": 48.63,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 48.38,
-      "intervalRate": 8.75,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "515": [
-    {
-      "winRate": 53.32,
-      "intervalRate": 39.29,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 51.11,
-      "intervalRate": 50.6,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 49.16,
-      "intervalRate": 10.11,
+      "winRate": 47.27,
+      "intervalRate": 10.1,
       "durationRange": "18分钟+"
     }
   ],
   "508": [
     {
-      "winRate": 46.84,
-      "intervalRate": 39.33,
+      "winRate": 46.59,
+      "intervalRate": 39.52,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 51.03,
-      "intervalRate": 50.73,
+      "winRate": 51.23,
+      "intervalRate": 50.57,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 51.27,
-      "intervalRate": 9.93,
+      "winRate": 51.72,
+      "intervalRate": 9.91,
       "durationRange": "18分钟+"
     }
   ],
-  "518": [
+  "513": [
     {
-      "winRate": 51.56,
-      "intervalRate": 41.13,
+      "winRate": 54.43,
+      "intervalRate": 42.67,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 51.06,
-      "intervalRate": 49.17,
+      "winRate": 52.47,
+      "intervalRate": 48.68,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 46.37,
-      "intervalRate": 9.71,
+      "winRate": 48.45,
+      "intervalRate": 8.65,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "517": [
+    {
+      "winRate": 51.95,
+      "intervalRate": 38.39,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 51.19,
+      "intervalRate": 50.67,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 50.33,
+      "intervalRate": 10.94,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "515": [
+    {
+      "winRate": 54.56,
+      "intervalRate": 39.62,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 50.88,
+      "intervalRate": 50.58,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 48.3,
+      "intervalRate": 9.8,
       "durationRange": "18分钟+"
     }
   ],
   "509": [
     {
-      "winRate": 55.61,
-      "intervalRate": 36.92,
+      "winRate": 56.82,
+      "intervalRate": 37.7,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 53.53,
-      "intervalRate": 52.07,
+      "winRate": 53.49,
+      "intervalRate": 51.52,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 51.25,
-      "intervalRate": 11.01,
+      "winRate": 50.94,
+      "intervalRate": 10.78,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "518": [
+    {
+      "winRate": 50.96,
+      "intervalRate": 41.27,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 52.04,
+      "intervalRate": 48.98,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 47.92,
+      "intervalRate": 9.75,
       "durationRange": "18分钟+"
     }
   ],
   "519": [
     {
-      "winRate": 52.27,
-      "intervalRate": 37.97,
+      "winRate": 50.74,
+      "intervalRate": 38.81,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.83,
-      "intervalRate": 51.38,
+      "winRate": 50.19,
+      "intervalRate": 50.74,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.67,
-      "intervalRate": 10.65,
+      "winRate": 49.07,
+      "intervalRate": 10.44,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "523": [
+    {
+      "winRate": 55.69,
+      "intervalRate": 38.47,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 50.54,
+      "intervalRate": 50.47,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 45.45,
+      "intervalRate": 11.06,
       "durationRange": "18分钟+"
     }
   ],
   "521": [
     {
-      "winRate": 49.54,
-      "intervalRate": 43.24,
+      "winRate": 49.93,
+      "intervalRate": 43.58,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.83,
-      "intervalRate": 48.81,
+      "winRate": 50.95,
+      "intervalRate": 48.57,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.31,
-      "intervalRate": 7.95,
+      "winRate": 49.48,
+      "intervalRate": 7.85,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "527": [
+    {
+      "winRate": 60.68,
+      "intervalRate": 40.44,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 47.56,
+      "intervalRate": 49.34,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 43.3,
+      "intervalRate": 10.22,
       "durationRange": "18分钟+"
     }
   ],
   "514": [
     {
       "winRate": 45.39,
-      "intervalRate": 34.6,
+      "intervalRate": 34.51,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 51.72,
-      "intervalRate": 52.44,
+      "winRate": 51.7,
+      "intervalRate": 52.57,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 52.22,
-      "intervalRate": 12.97,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "523": [
-    {
-      "winRate": 55.91,
-      "intervalRate": 38,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 50.89,
-      "intervalRate": 50.77,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 44.84,
-      "intervalRate": 11.23,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "527": [
-    {
-      "winRate": 60.79,
-      "intervalRate": 40.63,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 47.9,
-      "intervalRate": 49.27,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 42.49,
-      "intervalRate": 10.09,
+      "winRate": 52.42,
+      "intervalRate": 12.92,
       "durationRange": "18分钟+"
     }
   ],
   "522": [
     {
-      "winRate": 46.12,
+      "winRate": 46.47,
       "intervalRate": 34.76,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.47,
-      "intervalRate": 53.16,
+      "winRate": 49.63,
+      "intervalRate": 53.04,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 51.21,
-      "intervalRate": 12.08,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "533": [
-    {
-      "winRate": 57.72,
-      "intervalRate": 44.36,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 49.33,
-      "intervalRate": 47.49,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 50.25,
-      "intervalRate": 8.15,
+      "winRate": 51.83,
+      "intervalRate": 12.2,
       "durationRange": "18分钟+"
     }
   ],
   "524": [
     {
-      "winRate": 49.11,
-      "intervalRate": 38.52,
+      "winRate": 49.32,
+      "intervalRate": 38.64,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.06,
-      "intervalRate": 50.97,
+      "winRate": 48.84,
+      "intervalRate": 51.11,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.08,
-      "intervalRate": 10.51,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "528": [
-    {
-      "winRate": 46.03,
-      "intervalRate": 38.1,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 49.73,
-      "intervalRate": 50.71,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 49.35,
-      "intervalRate": 11.19,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "525": [
-    {
-      "winRate": 48.86,
-      "intervalRate": 37.92,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 50.59,
-      "intervalRate": 51.28,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 51.73,
-      "intervalRate": 10.8,
+      "winRate": 50.16,
+      "intervalRate": 10.25,
       "durationRange": "18分钟+"
     }
   ],
   "529": [
     {
-      "winRate": 51.87,
-      "intervalRate": 36.49,
+      "winRate": 52.36,
+      "intervalRate": 36.58,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.38,
-      "intervalRate": 52.01,
+      "winRate": 50.16,
+      "intervalRate": 51.99,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 51.48,
-      "intervalRate": 11.5,
+      "winRate": 51.56,
+      "intervalRate": 11.43,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "533": [
+    {
+      "winRate": 57.77,
+      "intervalRate": 44.68,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 49.23,
+      "intervalRate": 47.09,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 49.06,
+      "intervalRate": 8.23,
       "durationRange": "18分钟+"
     }
   ],
   "536": [
     {
-      "winRate": 49.95,
-      "intervalRate": 39.27,
+      "winRate": 50.21,
+      "intervalRate": 39.31,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.92,
-      "intervalRate": 50.59,
+      "winRate": 49.14,
+      "intervalRate": 50.68,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.2,
-      "intervalRate": 10.14,
+      "winRate": 50.12,
+      "intervalRate": 10.01,
       "durationRange": "18分钟+"
     }
   ],
-  "531": [
+  "528": [
     {
-      "winRate": 52.64,
-      "intervalRate": 36.58,
+      "winRate": 46.44,
+      "intervalRate": 38.41,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 53.22,
-      "intervalRate": 51.97,
+      "winRate": 49.78,
+      "intervalRate": 50.44,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 52.76,
-      "intervalRate": 11.45,
+      "winRate": 48.8,
+      "intervalRate": 11.15,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "525": [
+    {
+      "winRate": 48.38,
+      "intervalRate": 37.39,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 50.25,
+      "intervalRate": 51.57,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 50.59,
+      "intervalRate": 11.04,
       "durationRange": "18分钟+"
     }
   ],
   "537": [
     {
-      "winRate": 47.22,
-      "intervalRate": 40.65,
+      "winRate": 46.93,
+      "intervalRate": 41.05,
       "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 49.07,
-      "intervalRate": 49.7,
-      "durationRange": "12-18分钟"
     },
     {
       "winRate": 48.99,
-      "intervalRate": 9.65,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "534": [
-    {
-      "winRate": 49.36,
-      "intervalRate": 39.42,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 48.79,
-      "intervalRate": 51.07,
+      "intervalRate": 49.34,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 45.82,
-      "intervalRate": 9.5,
+      "winRate": 48.78,
+      "intervalRate": 9.61,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "531": [
+    {
+      "winRate": 53.05,
+      "intervalRate": 36.44,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 52.43,
+      "intervalRate": 51.8,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 54,
+      "intervalRate": 11.76,
       "durationRange": "18分钟+"
     }
   ],
   "540": [
     {
-      "winRate": 45.76,
-      "intervalRate": 36.29,
+      "winRate": 45.98,
+      "intervalRate": 36.33,
       "durationRange": "0-12分钟"
     },
     {
       "winRate": 46.42,
-      "intervalRate": 52.02,
+      "intervalRate": 52.01,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 43.79,
-      "intervalRate": 11.68,
+      "winRate": 44.37,
+      "intervalRate": 11.66,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "534": [
+    {
+      "winRate": 48.98,
+      "intervalRate": 39.7,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 49,
+      "intervalRate": 50.9,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 46.07,
+      "intervalRate": 9.4,
       "durationRange": "18分钟+"
     }
   ],
   "538": [
     {
-      "winRate": 48.41,
-      "intervalRate": 37.27,
+      "winRate": 48.53,
+      "intervalRate": 37.07,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.64,
-      "intervalRate": 51.57,
+      "winRate": 49.89,
+      "intervalRate": 51.78,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.02,
-      "intervalRate": 11.17,
+      "winRate": 48.8,
+      "intervalRate": 11.15,
       "durationRange": "18分钟+"
     }
   ],
   "544": [
     {
-      "winRate": 46.79,
-      "intervalRate": 37.45,
+      "winRate": 47.19,
+      "intervalRate": 37.25,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.88,
-      "intervalRate": 51.14,
+      "winRate": 48.44,
+      "intervalRate": 51.32,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.82,
-      "intervalRate": 11.41,
+      "winRate": 50.14,
+      "intervalRate": 11.43,
       "durationRange": "18分钟+"
     }
   ],
   "548": [
     {
-      "winRate": 50.96,
-      "intervalRate": 38.26,
+      "winRate": 51.62,
+      "intervalRate": 38.2,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 52.3,
-      "intervalRate": 51.64,
+      "winRate": 52.64,
+      "intervalRate": 51.53,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 47.95,
-      "intervalRate": 10.09,
+      "winRate": 48.54,
+      "intervalRate": 10.27,
       "durationRange": "18分钟+"
     }
   ],
   "545": [
     {
-      "winRate": 46.33,
-      "intervalRate": 40.34,
+      "winRate": 45.35,
+      "intervalRate": 40.59,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.78,
-      "intervalRate": 50.02,
+      "winRate": 49.81,
+      "intervalRate": 49.27,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 54.84,
-      "intervalRate": 9.64,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "547": [
-    {
-      "winRate": 48.86,
-      "intervalRate": 39.63,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 51.97,
-      "intervalRate": 51.1,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 50.7,
-      "intervalRate": 9.28,
+      "winRate": 52.96,
+      "intervalRate": 10.14,
       "durationRange": "18分钟+"
     }
   ],
   "542": [
     {
-      "winRate": 46.85,
-      "intervalRate": 39.76,
+      "winRate": 46.38,
+      "intervalRate": 40.03,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 47.93,
-      "intervalRate": 50.44,
+      "winRate": 48.09,
+      "intervalRate": 50.06,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.21,
-      "intervalRate": 9.8,
+      "winRate": 50.08,
+      "intervalRate": 9.91,
       "durationRange": "18分钟+"
     }
   ],
-  "558": [
+  "547": [
     {
-      "winRate": 50.72,
-      "intervalRate": 40.35,
+      "winRate": 48.8,
+      "intervalRate": 39.8,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.04,
-      "intervalRate": 50.08,
+      "winRate": 52.24,
+      "intervalRate": 50.95,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.52,
-      "intervalRate": 9.58,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "563": [
-    {
-      "winRate": 52.41,
-      "intervalRate": 35.6,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 47.6,
-      "intervalRate": 51.48,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 45.92,
-      "intervalRate": 12.92,
+      "winRate": 50.04,
+      "intervalRate": 9.25,
       "durationRange": "18分钟+"
     }
   ],
   "549": [
     {
-      "winRate": 42.78,
-      "intervalRate": 38.15,
+      "winRate": 43.18,
+      "intervalRate": 38.3,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 46.43,
-      "intervalRate": 51.26,
+      "winRate": 46.47,
+      "intervalRate": 51.21,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.85,
-      "intervalRate": 10.59,
+      "winRate": 50.81,
+      "intervalRate": 10.48,
       "durationRange": "18分钟+"
     }
   ],
-  "564": [
+  "558": [
     {
-      "winRate": 49.32,
-      "intervalRate": 38.14,
+      "winRate": 50.83,
+      "intervalRate": 40.65,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 50.47,
-      "intervalRate": 50.91,
+      "winRate": 49.75,
+      "intervalRate": 49.86,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.7,
-      "intervalRate": 10.95,
+      "winRate": 49.02,
+      "intervalRate": 9.49,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "563": [
+    {
+      "winRate": 52.79,
+      "intervalRate": 35.54,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 47.95,
+      "intervalRate": 51.37,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 44.24,
+      "intervalRate": 13.09,
       "durationRange": "18分钟+"
     }
   ],
   "550": [
     {
-      "winRate": 48.79,
-      "intervalRate": 38.04,
+      "winRate": 49.03,
+      "intervalRate": 37.89,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.09,
-      "intervalRate": 51.12,
+      "winRate": 47.95,
+      "intervalRate": 51.17,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 50.45,
-      "intervalRate": 10.83,
+      "winRate": 50.11,
+      "intervalRate": 10.94,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "564": [
+    {
+      "winRate": 49.24,
+      "intervalRate": 38.16,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 50.34,
+      "intervalRate": 50.96,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 49.55,
+      "intervalRate": 10.88,
       "durationRange": "18分钟+"
     }
   ],
   "581": [
     {
-      "winRate": 49.43,
-      "intervalRate": 38.37,
+      "winRate": 49.32,
+      "intervalRate": 38.42,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 49.18,
-      "intervalRate": 51.6,
+      "winRate": 49.01,
+      "intervalRate": 51.47,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 49.56,
-      "intervalRate": 10.03,
+      "winRate": 49.16,
+      "intervalRate": 10.11,
       "durationRange": "18分钟+"
     }
   ],
   "582": [
     {
-      "winRate": 42.06,
-      "intervalRate": 39.79,
+      "winRate": 42.25,
+      "intervalRate": 39.9,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 48.77,
-      "intervalRate": 50.86,
+      "winRate": 48.88,
+      "intervalRate": 50.76,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 51.56,
-      "intervalRate": 9.36,
+      "winRate": 51.82,
+      "intervalRate": 9.34,
       "durationRange": "18分钟+"
     }
   ],
   "577": [
     {
-      "winRate": 50.23,
-      "intervalRate": 42.03,
+      "winRate": 50.56,
+      "intervalRate": 41.64,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 51.8,
-      "intervalRate": 48.92,
+      "winRate": 52.79,
+      "intervalRate": 49.91,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 48.03,
-      "intervalRate": 9.05,
-      "durationRange": "18分钟+"
-    }
-  ],
-  "583": [
-    {
-      "winRate": 45.42,
-      "intervalRate": 37.76,
-      "durationRange": "0-12分钟"
-    },
-    {
-      "winRate": 50.42,
-      "intervalRate": 51.75,
-      "durationRange": "12-18分钟"
-    },
-    {
-      "winRate": 50.08,
-      "intervalRate": 10.49,
+      "winRate": 49.9,
+      "intervalRate": 8.45,
       "durationRange": "18分钟+"
     }
   ],
   "584": [
     {
-      "winRate": 49.97,
-      "intervalRate": 38.49,
+      "winRate": 50.25,
+      "intervalRate": 38.47,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 47.97,
-      "intervalRate": 50.59,
+      "winRate": 48.52,
+      "intervalRate": 50.56,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 45.43,
-      "intervalRate": 10.92,
+      "winRate": 45.72,
+      "intervalRate": 10.98,
+      "durationRange": "18分钟+"
+    }
+  ],
+  "583": [
+    {
+      "winRate": 45.51,
+      "intervalRate": 37.77,
+      "durationRange": "0-12分钟"
+    },
+    {
+      "winRate": 50.44,
+      "intervalRate": 51.75,
+      "durationRange": "12-18分钟"
+    },
+    {
+      "winRate": 50.43,
+      "intervalRate": 10.48,
       "durationRange": "18分钟+"
     }
   ],
   "585": [
     {
-      "winRate": 49.73,
-      "intervalRate": 44.58,
+      "winRate": 48.64,
+      "intervalRate": 44.51,
       "durationRange": "0-12分钟"
     },
     {
-      "winRate": 51.54,
-      "intervalRate": 47.48,
+      "winRate": 50.87,
+      "intervalRate": 47.5,
       "durationRange": "12-18分钟"
     },
     {
-      "winRate": 47.6,
-      "intervalRate": 7.94,
+      "winRate": 49.9,
+      "intervalRate": 7.99,
       "durationRange": "18分钟+"
     }
   ]
